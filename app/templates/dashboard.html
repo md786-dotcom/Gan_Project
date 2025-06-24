@@ -56,7 +56,7 @@
         <div class="col-md-3">
             <div class="stat-card">
                 <i class="fas fa-calendar text-warning"></i>
-                <div class="stat-number">{{ moment(user.created_at).fromNow()|replace(' ago', '') }}</div>
+                <div class="stat-number">{{ user.created_at.strftime('%B %Y') }}</div>
                 <div class="stat-label">Member Since</div>
             </div>
         </div>
