@@ -33,7 +33,7 @@ pip install -r requirements-minimal.txt
 python app.py
 
 # 3. Open your browser and go to:
-# http://localhost:5000
+# http://localhost:5001
 ```
 
 That's it! 🎉 The service will automatically:
@@ -268,14 +268,14 @@ gunicorn -w 4 -b 0.0.0.0:5000 run:app
 **✅ Success Indicators:**
 - Server starts without errors
 - Console shows: "Image Processing Service is ready!"
-- Console shows: "Open your browser and go to: http://localhost:5000"
-- Visit http://localhost:5000 - should show the beautiful landing page
+- Console shows: "Open your browser and go to: http://localhost:5001"
+- Visit http://localhost:5001 - should show the beautiful landing page
 
 ## Using the Web Interface
 
 ### Getting Started with the Web Interface
 
-1. **Open your browser** and navigate to `http://localhost:5000`
+1. **Open your browser** and navigate to `http://localhost:5001`
 2. **Sign up** for a new account or **sign in** if you already have one
 3. Start uploading and processing images immediately!
 
@@ -361,7 +361,7 @@ gunicorn -w 4 -b 0.0.0.0:5000 run:app
 
 #### 1. Register a New User
 ```bash
-curl -X POST http://localhost:5000/api/auth/signup \
+curl -X POST http://localhost:5001/api/auth/signup \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "password": "password123"}'
 ```
@@ -381,7 +381,7 @@ curl -X POST http://localhost:5000/api/auth/signup \
 
 #### 2. Login
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:5001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "password": "password123"}'
 ```
@@ -389,20 +389,20 @@ curl -X POST http://localhost:5000/api/auth/login \
 #### 3. Upload an Image
 ```bash
 # Replace YOUR_JWT_TOKEN with the token from login response
-curl -X POST http://localhost:5000/api/images/upload \
+curl -X POST http://localhost:5001/api/images/upload \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -F "file=@/path/to/your/image.jpg"
 ```
 
 #### 4. List Your Images
 ```bash
-curl -X GET http://localhost:5000/api/images/ \
+curl -X GET http://localhost:5001/api/images/ \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 #### 5. Transform an Image
 ```bash
-curl -X POST http://localhost:5000/api/images/1/transform \
+curl -X POST http://localhost:5001/api/images/1/transform \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -428,7 +428,7 @@ curl -X POST http://localhost:5000/api/images/1/transform \
 
    **Register User:**
    - Method: POST
-   - URL: `http://localhost:5000/api/auth/signup`
+   - URL: `http://localhost:5001/api/auth/signup`
    - Headers: `Content-Type: application/json`
    - Body (raw JSON):
      ```json
@@ -440,7 +440,7 @@ curl -X POST http://localhost:5000/api/images/1/transform \
 
    **Upload Image:**
    - Method: POST
-   - URL: `http://localhost:5000/api/images/upload`
+   - URL: `http://localhost:5001/api/images/upload`
    - Headers: `Authorization: Bearer YOUR_JWT_TOKEN`
    - Body: form-data with key `file` and select your image file
 
@@ -452,7 +452,7 @@ Create a test script `test_api.py`:
 import requests
 import json
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:5001"
 
 # 1. Register user
 def register_user(email, password):
@@ -634,8 +634,8 @@ python app.py
 ### Getting Help
 
 1. **Check server logs** in the terminal where you ran `python app.py`
-2. **Test health endpoint**: Visit http://localhost:5000/health
-3. **Try the web interface**: Visit http://localhost:5000 to use the GUI
+2. **Test health endpoint**: Visit http://localhost:5001/health
+3. **Try the web interface**: Visit http://localhost:5001 to use the GUI
 4. **Check file permissions**: Ensure the app can create directories and files
 
 ## Performance Tips

@@ -103,7 +103,7 @@ python run.py init_db
 python run.py
 
 # Production mode with Gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 run:app
+gunicorn -w 4 -b 0.0.0.0:5001 run:app
 ```
 
 ## API Endpoints
@@ -127,21 +127,21 @@ gunicorn -w 4 -b 0.0.0.0:5000 run:app
 
 ### User Registration
 ```bash
-curl -X POST http://localhost:5000/api/auth/signup \\
+curl -X POST http://localhost:5001/api/auth/signup \\
   -H "Content-Type: application/json" \\
   -d '{"email": "user@example.com", "password": "password123"}'
 ```
 
 ### Image Upload
 ```bash
-curl -X POST http://localhost:5000/api/images/upload \\
+curl -X POST http://localhost:5001/api/images/upload \\
   -H "Authorization: Bearer <your-jwt-token>" \\
   -F "file=@/path/to/image.jpg"
 ```
 
 ### Image Transformation
 ```bash
-curl -X POST http://localhost:5000/api/images/1/transform \\
+curl -X POST http://localhost:5001/api/images/1/transform \\
   -H "Authorization: Bearer <your-jwt-token>" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -229,9 +229,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
-EXPOSE 5000
+EXPOSE 5001
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "run:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5001", "run:app"]
 ```
 
 ### Environment Variables for Production

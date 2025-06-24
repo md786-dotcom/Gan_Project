@@ -45,7 +45,7 @@ def main():
             sys.exit(1)
     
     print("\n🎉 Image Processing Service is ready!")
-    print("📱 Open your browser and go to: http://localhost:5000")
+    print("📱 Open your browser and go to: http://localhost:5001")
     print("💡 No configuration needed - everything works out of the box!")
     print("\nFeatures available:")
     print("- 🖼️  Upload and process images")
@@ -58,7 +58,7 @@ def main():
     try:
         app.run(
             host='0.0.0.0',
-            port=5000,
+            port=5001,
             debug=True,
             use_reloader=False  # Prevent double startup messages
         )
