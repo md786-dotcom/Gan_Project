@@ -404,12 +404,32 @@ let selectedFormat = '';
 let formatModal;
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - initializing format conversion...');
+    
     // Initialize format modal
-    formatModal = new bootstrap.Modal(document.getElementById('formatModal'));
+    const formatModalElement = document.getElementById('formatModal');
+    if (formatModalElement) {
+        formatModal = new bootstrap.Modal(formatModalElement);
+        console.log('Format modal initialized');
+    } else {
+        console.error('Format modal element not found!');
+    }
+    
+    // Initialize format selection
     initializeFormatSelection();
     
     // Add event listener for format convert button
-    document.getElementById('formatConvertBtn').addEventListener('click', openFormatModal);
+    const formatBtn = document.getElementById('formatConvertBtn');
+    if (formatBtn) {
+        formatBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Format convert button clicked');
+            openFormatModal();
+        });
+        console.log('Format convert button event listener added');
+    } else {
+        console.error('Format convert button not found!');
+    }
     
     // Initialize aspect ratio maintenance
     const widthInput = document.getElementById('width');
@@ -530,49 +550,93 @@ document.addEventListener('keydown', function(e) {
 
 // Format Selection Functions
 function openFormatModal() {
-    formatModal.show();
+    console.log('Opening format modal...');
+    if (formatModal) {
+        formatModal.show();
+    } else {
+        console.error('Format modal not initialized!');
+    }
 }
 
 function initializeFormatSelection() {
+    console.log('Initializing format selection...');
+    
     const formatOptions = document.querySelectorAll('.format-option');
     const confirmBtn = document.getElementById('confirmFormat');
     const selectionAlert = document.getElementById('formatSelection');
     const selectionText = document.getElementById('selectedFormatText');
     
-    formatOptions.forEach(option => {
+    console.log('Found format options:', formatOptions.length);
+    console.log('Confirm button:', confirmBtn);
+    
+    if (formatOptions.length === 0) {
+        console.error('No format options found!');
+        return;
+    }
+    
+    if (!confirmBtn) {
+        console.error('Confirm button not found!');
+        return;
+    }
+    
+    formatOptions.forEach((option, index) => {
+        console.log(`Setting up option ${index}:`, option.dataset.format);
         option.addEventListener('click', function() {
+            console.log('Format option clicked:', this.dataset.format);
+            
             // Remove selection from all options
             formatOptions.forEach(opt => {
-                opt.querySelector('.format-card').classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+                const card = opt.querySelector('.format-card');
+                if (card) {
+                    card.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+                }
             });
             
             // Add selection to clicked option
             const card = this.querySelector('.format-card');
-            card.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+            if (card) {
+                card.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+            }
             
             // Update selected format
-            selectedFormat = this.dataset.format;
+            selectedFormat = this.dataset.format || '';
+            console.log('Selected format:', selectedFormat);
             
             // Update UI
             updateFormatSelection();
             confirmBtn.disabled = false;
+            confirmBtn.style.pointerEvents = 'auto';
         });
     });
     
     confirmBtn.addEventListener('click', function() {
+        console.log('Confirm button clicked, selected format:', selectedFormat);
+        
         // Set the hidden input value
-        document.getElementById('selectedFormat').value = selectedFormat;
+        const hiddenInput = document.getElementById('selectedFormat');
+        if (hiddenInput) {
+            hiddenInput.value = selectedFormat;
+            console.log('Hidden input updated:', hiddenInput.value);
+        }
         
         // Update the format panel UI
         updateFormatPanel();
         
         // Close modal
-        formatModal.hide();
+        if (formatModal) {
+            formatModal.hide();
+        }
         
         // Show success notification
         const formatName = selectedFormat ? selectedFormat.toUpperCase() : 'Original';
-        showNotification(`Format set to ${formatName}`, 'success');
+        if (typeof showNotification === 'function') {
+            showNotification(`Format set to ${formatName}`, 'success');
+        } else {
+            console.log(`Format set to ${formatName}`);
+        }
     });
+    
+    console.log('Format selection initialization complete');
 }
 
 function updateFormatSelection() {
@@ -590,7 +654,14 @@ function updateFormatSelection() {
 }
 
 function updateFormatPanel() {
+    console.log('Updating format panel with selected format:', selectedFormat);
     const formatButton = document.getElementById('formatConvertBtn');
+    
+    if (!formatButton) {
+        console.error('Format button not found for update!');
+        return;
+    }
+    
     if (selectedFormat === '') {
         formatButton.innerHTML = '<i class="fas fa-exchange-alt me-1"></i>Convert Format';
         formatButton.className = 'btn btn-outline-primary btn-sm';
@@ -598,6 +669,15 @@ function updateFormatPanel() {
         formatButton.innerHTML = `<i class="fas fa-check me-1"></i>Converting to ${selectedFormat.toUpperCase()}`;
         formatButton.className = 'btn btn-success btn-sm';
     }
+    
+    // Re-add the event listener since we changed innerHTML
+    formatButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Format convert button clicked (after update)');
+        openFormatModal();
+    });
+    
+    console.log('Format panel updated successfully');
 }
 
 // Add CSS for format selection
