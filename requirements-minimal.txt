@@ -1,0 +1,10 @@
+# Minimal requirements - just what's needed to run the application
+Flask
+Flask-SQLAlchemy
+Flask-JWT-Extended
+Flask-CORS
+Flask-Limiter
+Flask-WTF
+Pillow
+python-dotenv
+bcrypt

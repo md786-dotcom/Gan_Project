@@ -18,8 +18,16 @@ This guide will help you set up and use the Image Processing Service on both Mac
 **Get started in 3 simple steps - no configuration required!**
 
 ```bash
-# 1. Install dependencies
+# 1. Install dependencies (choose one option below)
+
+# Option A: Standard installation
 pip install -r requirements.txt
+
+# Option B: If you get dependency conflicts, try flexible versions
+pip install -r requirements-flexible.txt
+
+# Option C: Minimal installation (just core features)
+pip install -r requirements-minimal.txt
 
 # 2. Run the application
 python app.py
@@ -563,21 +571,44 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
-#### 4. "AWS credentials not found"
-**Solution:** Check your `.env` file has correct AWS credentials:
-```env
-AWS_ACCESS_KEY_ID=your-key-here
-AWS_SECRET_ACCESS_KEY=your-secret-here
-S3_BUCKET_NAME=your-bucket-name
+#### 4. Dependency conflicts (e.g., black version conflicts)
+**Solutions (try in order):**
+
+**Option A: Use flexible requirements**
+```bash
+pip install -r requirements-flexible.txt
 ```
 
-#### 5. "Failed to upload to S3"
-**Solutions:**
-- Verify S3 bucket exists and is accessible
-- Check IAM user has S3 permissions
-- Ensure bucket name is correct in `.env`
+**Option B: Use minimal requirements**
+```bash
+pip install -r requirements-minimal.txt
+```
 
-#### 6. Port already in use
+**Option C: Force upgrade conflicting packages**
+```bash
+# For black conflicts specifically
+pip install --upgrade black
+
+# Then install other requirements
+pip install -r requirements.txt
+```
+
+**Option D: Create fresh virtual environment**
+```bash
+# Delete existing environment
+rm -rf venv  # Mac/Linux
+rmdir /s venv  # Windows
+
+# Create new environment
+python -m venv venv
+source venv/bin/activate  # Mac/Linux
+venv\Scripts\activate     # Windows
+
+# Install with minimal requirements
+pip install -r requirements-minimal.txt
+```
+
+#### 5. Port already in use
 **Solution:**
 ```bash
 # Find and kill process using port 5000
@@ -589,23 +620,23 @@ netstat -ano | findstr :5000
 taskkill /PID <PID_NUMBER> /F
 ```
 
-#### 7. Database errors
+#### 6. Database errors
 **Solution:**
 ```bash
 # Delete and recreate database
 rm image_service.db  # Mac/Linux
 del image_service.db # Windows
 
-# Reinitialize
-python run.py init_db
+# Restart the application (it will recreate the database)
+python app.py
 ```
 
 ### Getting Help
 
-1. **Check server logs** in the terminal where you ran `python run.py`
+1. **Check server logs** in the terminal where you ran `python app.py`
 2. **Test health endpoint**: Visit http://localhost:5000/health
-3. **Verify environment**: Check `.env` file configuration
-4. **Test AWS connection**: Use AWS CLI or boto3 to verify credentials
+3. **Try the web interface**: Visit http://localhost:5000 to use the GUI
+4. **Check file permissions**: Ensure the app can create directories and files
 
 ## Performance Tips
 
