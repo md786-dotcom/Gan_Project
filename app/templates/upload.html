@@ -172,6 +172,30 @@ function clearFile() {
     uploadZone.classList.remove('dragover');
 }
 
+function truncateFilename(filename, maxLength = 20) {
+    if (filename.length <= maxLength) {
+        return filename;
+    }
+    
+    // Try to preserve file extension
+    const lastDotIndex = filename.lastIndexOf('.');
+    if (lastDotIndex > 0 && lastDotIndex < filename.length - 1) {
+        const name = filename.substring(0, lastDotIndex);
+        const extension = filename.substring(lastDotIndex);
+        
+        // If extension is reasonable length, preserve it
+        if (extension.length <= 5) {
+            const availableLength = maxLength - extension.length - 3; // 3 for "..."
+            if (availableLength > 0) {
+                return name.substring(0, availableLength) + '...' + extension;
+            }
+        }
+    }
+    
+    // If no extension or extension too long, just truncate
+    return filename.substring(0, maxLength - 3) + '...';
+}
+
 function loadRecentUploads() {
     const recentUploads = document.getElementById('recentUploads');
     if (!recentUploads) return;
@@ -194,10 +218,10 @@ function loadRecentUploads() {
                                             <img src="${image.s3_url}" alt="${image.original_name}" 
                                                  class="rounded me-3 flex-shrink-0" style="width: 50px; height: 50px; object-fit: cover;">
                                             <div class="flex-grow-1 min-w-0">
-                                                <h6 class="mb-1 text-truncate" title="${image.original_name}">
-                                                    ${image.original_name}
+                                                <h6 class="mb-1" title="${image.original_name}" style="font-size: 0.9rem; line-height: 1.2; word-break: break-all;">
+                                                    ${truncateFilename(image.original_name, 18)}
                                                 </h6>
-                                                <div class="small text-muted text-truncate">
+                                                <div class="small text-muted">
                                                     <div>${image.width}×${image.height}</div>
                                                     <div>${Math.round(image.file_size / 1024)}KB</div>
                                                 </div>
