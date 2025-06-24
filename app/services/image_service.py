@@ -316,7 +316,7 @@ class ImageService:
     @staticmethod
     def compress_image(image_bytes, quality=85):
         """
-        Compress an image.
+        Compress an image with aggressive optimization.
         
         Args:
             image_bytes: Image data as bytes
@@ -327,24 +327,60 @@ class ImageService:
         """
         try:
             image = Image.open(io.BytesIO(image_bytes))
+            original_format = image.format
             
             output = io.BytesIO()
             
-            if image.format == 'PNG':
-                # PNG compression through optimization
-                image.save(output, format='PNG', optimize=True)
+            if original_format == 'PNG':
+                # For PNG, use more aggressive compression
+                if image.mode in ('RGBA', 'LA') and quality < 90:
+                    # For lower quality, convert to JPEG for better compression
+                    if image.mode == 'RGBA':
+                        background = Image.new('RGB', image.size, (255, 255, 255))
+                        background.paste(image, mask=image.split()[-1])
+                        image = background
+                    elif image.mode == 'LA':
+                        image = image.convert('RGB')
+                    
+                    image.save(output, format='JPEG', quality=quality, optimize=True)
+                else:
+                    # Keep as PNG but optimize aggressively
+                    image.save(output, format='PNG', optimize=True, compress_level=9)
             else:
                 # JPEG compression with quality setting
                 if image.mode in ('RGBA', 'LA', 'P'):
                     background = Image.new('RGB', image.size, (255, 255, 255))
                     if image.mode == 'P':
                         image = image.convert('RGBA')
-                    background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+                    if image.mode in ('RGBA', 'LA'):
+                        if image.mode == 'RGBA':
+                            background.paste(image, mask=image.split()[-1])
+                        else:
+                            background.paste(image.convert('RGB'))
                     image = background
                 
                 image.save(output, format='JPEG', quality=quality, optimize=True)
             
-            return output.getvalue()
+            compressed_bytes = output.getvalue()
+            
+            # Ensure we actually achieved compression
+            if len(compressed_bytes) >= len(image_bytes):
+                # If no compression achieved, try JPEG with lower quality
+                if original_format == 'PNG':
+                    image = Image.open(io.BytesIO(image_bytes))
+                    if image.mode in ('RGBA', 'LA'):
+                        background = Image.new('RGB', image.size, (255, 255, 255))
+                        if image.mode == 'RGBA':
+                            background.paste(image, mask=image.split()[-1])
+                        else:
+                            background.paste(image.convert('RGB'))
+                        image = background
+                    
+                    output = io.BytesIO()
+                    image.save(output, format='JPEG', quality=max(50, quality-20), optimize=True)
+                    compressed_bytes = output.getvalue()
+            
+            return compressed_bytes
             
         except Exception as e:
             raise Exception(f"Failed to compress image: {str(e)}")

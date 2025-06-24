@@ -51,9 +51,6 @@
                         <i class="fas fa-bolt me-2"></i>Quick Actions
                     </h6>
                     <div class="d-grid gap-2 d-md-flex">
-                        <button type="button" class="btn btn-outline-primary" onclick="downloadImage('{{ image.s3_url }}', '{{ image.original_name }}')">
-                            <i class="fas fa-download me-2"></i>Download Original
-                        </button>
                         <a href="{{ url_for('web.dashboard') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
                         </a>
@@ -66,7 +63,6 @@
         <div class="col-lg-6">
             <form id="transformForm" method="POST" action="{{ url_for('images.transform_image', image_id=image.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <input type="hidden" id="selectedFormat" name="format" value="">
                 
                 <!-- Resize Panel -->
                 <div class="transform-panel">
@@ -160,29 +156,6 @@
                     </div>
                 </div>
                 
-                <!-- Format Conversion Panel -->
-                <div class="transform-panel">
-                    <h5>
-                        <i class="fas fa-file-export me-2"></i>Format Conversion
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="alert alert-info border-0">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <div class="flex-grow-1">
-                                        <strong>Current Format:</strong> {{ image.mime_type.split('/')[-1].upper() }}
-                                        <div class="small">Convert to a different format for compatibility or optimization</div>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" id="formatConvertBtn">
-                                        <i class="fas fa-exchange-alt me-1"></i>Convert Format
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Quality & Compression Panel -->
                 <div class="transform-panel">
                     <h5>
@@ -191,10 +164,10 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="quality" class="form-label">
-                                Quality: <span class="range-output">85</span>%
+                                Quality: <span id="qualityValue" class="fw-bold text-primary">85</span>%
                             </label>
                             <input type="range" class="form-range" id="quality" name="quality" 
-                                   min="1" max="100" value="85">
+                                   min="1" max="100" value="85" style="background: linear-gradient(to right, #0d6efd 0%, #0d6efd 85%, #dee2e6 85%, #dee2e6 100%);">
                             <div class="form-text">Higher quality = larger file size</div>
                         </div>
                         <div class="col-md-6">
@@ -269,117 +242,6 @@
     {% endif %}
 </div>
 
-<!-- Format Conversion Modal -->
-<div class="modal fade" id="formatModal" tabindex="-1" aria-labelledby="formatModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="formatModalLabel">
-                    <i class="fas fa-file-export me-2"></i>Convert Image Format
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-warning border-0">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Note:</strong> Format conversion will be applied along with other transformations. 
-                    You can only select one format at a time.
-                </div>
-                
-                <div class="row g-3">
-                    <div class="col-12">
-                        <h6 class="mb-3">Select Output Format:</h6>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="format-option" data-format="jpeg">
-                            <div class="card h-100 format-card" role="button">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-file-image text-primary mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="card-title">JPEG</h6>
-                                    <p class="card-text small text-muted">
-                                        Best for photos. Smaller file size with slight quality loss.
-                                    </p>
-                                    <div class="small">
-                                        <strong>Pros:</strong> Small size, universal support<br>
-                                        <strong>Cons:</strong> No transparency, lossy compression
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="format-option" data-format="png">
-                            <div class="card h-100 format-card" role="button">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-file-image text-success mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="card-title">PNG</h6>
-                                    <p class="card-text small text-muted">
-                                        Best for graphics and images with transparency.
-                                    </p>
-                                    <div class="small">
-                                        <strong>Pros:</strong> Lossless, transparency support<br>
-                                        <strong>Cons:</strong> Larger file size
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="format-option" data-format="webp">
-                            <div class="card h-100 format-card" role="button">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-file-image text-info mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="card-title">WebP</h6>
-                                    <p class="card-text small text-muted">
-                                        Modern format with excellent compression and quality.
-                                    </p>
-                                    <div class="small">
-                                        <strong>Pros:</strong> Great compression, quality<br>
-                                        <strong>Cons:</strong> Limited browser support
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="format-option" data-format="">
-                            <div class="card h-100 format-card" role="button">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-file text-secondary mb-2" style="font-size: 2rem;"></i>
-                                    <h6 class="card-title">Keep Original</h6>
-                                    <p class="card-text small text-muted">
-                                        Maintain the current format ({{ image.mime_type.split('/')[-1].upper() }}).
-                                    </p>
-                                    <div class="small">
-                                        <strong>No format conversion</strong><br>
-                                        Apply other transformations only
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-3">
-                    <div id="formatSelection" class="alert alert-success d-none">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <span id="selectedFormatText">No format selected</span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmFormat" disabled>
-                    <i class="fas fa-check me-2"></i>Confirm Selection
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Processing Modal -->
 <div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -399,37 +261,7 @@
 
 {% block extra_js %}
 <script>
-// Global variables for format selection
-let selectedFormat = '';
-let formatModal;
-
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded - initializing format conversion...');
-    
-    // Initialize format modal
-    const formatModalElement = document.getElementById('formatModal');
-    if (formatModalElement) {
-        formatModal = new bootstrap.Modal(formatModalElement);
-        console.log('Format modal initialized');
-    } else {
-        console.error('Format modal element not found!');
-    }
-    
-    // Initialize format selection
-    initializeFormatSelection();
-    
-    // Add event listener for format convert button
-    const formatBtn = document.getElementById('formatConvertBtn');
-    if (formatBtn) {
-        formatBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Format convert button clicked');
-            openFormatModal();
-        });
-        console.log('Format convert button event listener added');
-    } else {
-        console.error('Format convert button not found!');
-    }
     
     // Initialize aspect ratio maintenance
     const widthInput = document.getElementById('width');
@@ -548,178 +380,23 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Format Selection Functions
-function openFormatModal() {
-    console.log('Opening format modal...');
-    if (formatModal) {
-        formatModal.show();
-    } else {
-        console.error('Format modal not initialized!');
-    }
-}
-
-function initializeFormatSelection() {
-    console.log('Initializing format selection...');
+    // Quality slider value display and styling
+    const qualitySlider = document.getElementById('quality');
+    const qualityValue = document.getElementById('qualityValue');
     
-    // Wait a bit for modal to be fully rendered
-    setTimeout(() => {
-        const formatOptions = document.querySelectorAll('.format-option');
-        const confirmBtn = document.getElementById('confirmFormat');
-        
-        console.log('Found format options:', formatOptions.length);
-        console.log('Confirm button:', confirmBtn);
-        
-        if (formatOptions.length === 0) {
-            console.error('No format options found!');
-            return;
-        }
-        
-        if (!confirmBtn) {
-            console.error('Confirm button not found!');
-            return;
-        }
-    
-    formatOptions.forEach((option, index) => {
-        console.log(`Setting up option ${index}:`, option.dataset.format);
-        option.addEventListener('click', function() {
-            console.log('Format option clicked:', this.dataset.format);
-            
-            // Remove selection from all options
-            formatOptions.forEach(opt => {
-                const card = opt.querySelector('.format-card');
-                if (card) {
-                    card.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
-                }
-            });
-            
-            // Add selection to clicked option
-            const card = this.querySelector('.format-card');
-            if (card) {
-                card.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
-            }
-            
-            // Update selected format
-            selectedFormat = this.dataset.format || '';
-            console.log('Selected format:', selectedFormat);
-            
-            // Update UI
-            updateFormatSelection();
-            if (confirmBtn) {
-                confirmBtn.disabled = false;
-                confirmBtn.style.pointerEvents = 'auto';
-                console.log('Confirm button enabled');
-            }
+    if (qualitySlider && qualityValue) {
+        // Update quality value display
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = this.value;
+            // Update slider background to show progress
+            const progress = (this.value / this.max) * 100;
+            this.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${progress}%, #dee2e6 ${progress}%, #dee2e6 100%)`;
         });
-    });
-    
-    confirmBtn.addEventListener('click', function() {
-        console.log('Confirm button clicked, selected format:', selectedFormat);
         
-        // Set the hidden input value
-        const hiddenInput = document.getElementById('selectedFormat');
-        if (hiddenInput) {
-            hiddenInput.value = selectedFormat;
-            console.log('Hidden input updated:', hiddenInput.value);
-        }
-        
-        // Update the format panel UI
-        updateFormatPanel();
-        
-        // Close modal
-        if (formatModal) {
-            formatModal.hide();
-        }
-        
-        // Show success notification
-        const formatName = selectedFormat ? selectedFormat.toUpperCase() : 'Original';
-        if (typeof showNotification === 'function') {
-            showNotification(`Format set to ${formatName}`, 'success');
-        } else {
-            console.log(`Format set to ${formatName}`);
-        }
-    });
-    
-    console.log('Format selection initialization complete');
-    }, 100); // End setTimeout
-}
-
-function updateFormatSelection() {
-    console.log('updateFormatSelection called with selectedFormat:', selectedFormat);
-    
-    const selectionAlert = document.getElementById('formatSelection');
-    const selectionText = document.getElementById('selectedFormatText');
-    const currentFormat = '{{ image.mime_type.split("/")[-1].upper() }}';
-    
-    console.log('selectionAlert:', selectionAlert);
-    console.log('selectionText:', selectionText);
-    
-    if (!selectionAlert) {
-        console.error('formatSelection element not found!');
-        return;
+        // Initial slider styling
+        const initialProgress = (qualitySlider.value / qualitySlider.max) * 100;
+        qualitySlider.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${initialProgress}%, #dee2e6 ${initialProgress}%, #dee2e6 100%)`;
     }
-    
-    if (!selectionText) {
-        console.error('selectedFormatText element not found!');
-        return;
-    }
-    
-    if (selectedFormat === '') {
-        selectionText.textContent = `Keep original format (${currentFormat})`;
-    } else {
-        selectionText.textContent = `Convert to ${selectedFormat.toUpperCase()}`;
-    }
-    
-    selectionAlert.classList.remove('d-none');
-    console.log('Format selection updated successfully');
-}
-
-function updateFormatPanel() {
-    console.log('Updating format panel with selected format:', selectedFormat);
-    const formatButton = document.getElementById('formatConvertBtn');
-    
-    if (!formatButton) {
-        console.error('Format button not found for update!');
-        return;
-    }
-    
-    if (selectedFormat === '') {
-        formatButton.innerHTML = '<i class="fas fa-exchange-alt me-1"></i>Convert Format';
-        formatButton.className = 'btn btn-outline-primary btn-sm';
-    } else {
-        formatButton.innerHTML = `<i class="fas fa-check me-1"></i>Converting to ${selectedFormat.toUpperCase()}`;
-        formatButton.className = 'btn btn-success btn-sm';
-    }
-    
-    // Re-add the event listener since we changed innerHTML
-    formatButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('Format convert button clicked (after update)');
-        openFormatModal();
-    });
-    
-    console.log('Format panel updated successfully');
-}
-
-// Add CSS for format selection
-const style = document.createElement('style');
-style.textContent = `
-    .format-card {
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: 2px solid transparent !important;
-    }
-    
-    .format-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    
-    .format-option .format-card.border-primary {
-        border-color: var(--bs-primary) !important;
-        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
-    }
-`;
-document.head.appendChild(style);
 
 // Tooltip for keyboard shortcuts
 document.addEventListener('DOMContentLoaded', function() {

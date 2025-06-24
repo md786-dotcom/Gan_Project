@@ -247,6 +247,8 @@ def transform_image(image_id):
                 transform_params['format'] = request.form.get('format')
             if request.form.get('quality'):
                 transform_params['quality'] = int(request.form.get('quality'))
+            if request.form.get('compress'):
+                transform_params['compress'] = True
         
         # Validate transformation parameters
         is_valid, errors = validate_transformation_params(transform_params)
@@ -338,7 +340,7 @@ def transform_image(image_id):
         
         # Compress
         if 'compress' in transform_params:
-            quality = transform_params.get('quality', 85)
+            quality = transform_params.get('quality', 75)  # Lower default quality for better compression
             transformed_bytes = image_service.compress_image(transformed_bytes, quality)
             applied_transformations.append({
                 'type': 'compress',
