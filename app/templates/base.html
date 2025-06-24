@@ -12,7 +12,7 @@
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     
@@ -20,93 +20,71 @@
 </head>
 <body class="{% block body_class %}{% endblock %}">
     <!-- Navigation -->
-    <nav class="uk-navbar-container uk-navbar-transparent" style="background: rgba(79, 70, 229, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);" uk-navbar>
-        <div class="uk-container">
-            <div class="uk-navbar-left">
-                <a class="uk-navbar-item uk-logo uk-flex uk-flex-middle" href="{{ url_for('web.index') }}" style="font-size: 1.5rem; font-weight: 700; color: white;">
-                    <i class="fas fa-bolt uk-margin-small-right"></i>
-                    <span>Pixelz</span>
-                </a>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('web.index') }}">
+                <i class="fas fa-bolt me-2"></i>
+                <span class="fw-bold">Pixelz</span>
+            </a>
             
-            <div class="uk-navbar-right">
-                <button class="uk-navbar-toggle uk-hidden@m" uk-navbar-toggle-icon uk-toggle="target: #offcanvas-nav"></button>
-                
-                <ul class="uk-navbar-nav uk-visible@m">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
                     {% if session.user_id %}
-                        <li><a href="{{ url_for('web.dashboard') }}" style="font-weight: 500;">
-                            <i class="fas fa-tachometer-alt uk-margin-small-right"></i>Dashboard
-                        </a></li>
-                        <li><a href="{{ url_for('web.upload_page') }}" style="font-weight: 500;">
-                            <i class="fas fa-upload uk-margin-small-right"></i>Upload
-                        </a></li>
-                        <li><a href="{{ url_for('web.gallery') }}" style="font-weight: 500;">
-                            <i class="fas fa-images uk-margin-small-right"></i>Gallery
-                        </a></li>
-                        <li><a href="{{ url_for('web.help_page') }}" style="font-weight: 500;">
-                            <i class="fas fa-question-circle uk-margin-small-right"></i>Help
-                        </a></li>
-                        <li>
-                            <a href="#" style="font-weight: 500;">
-                                <i class="fas fa-user uk-margin-small-right"></i>{{ session.user_email }}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('web.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                             </a>
-                            <div uk-dropdown>
-                                <ul class="uk-nav uk-dropdown-nav">
-                                    <li><a href="{{ url_for('web.logout') }}">
-                                        <i class="fas fa-sign-out-alt uk-margin-small-right"></i>Logout
-                                    </a></li>
-                                </ul>
-                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('web.upload_page') }}">
+                                <i class="fas fa-upload me-1"></i>Upload
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('web.gallery') }}">
+                                <i class="fas fa-images me-1"></i>Gallery
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('web.help_page') }}">
+                                <i class="fas fa-question-circle me-1"></i>Help
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ session.user_email }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('web.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                </a></li>
+                            </ul>
                         </li>
                     {% else %}
-                        <li><a href="{{ url_for('web.help_page') }}" style="font-weight: 500;">
-                            <i class="fas fa-question-circle uk-margin-small-right"></i>Help
-                        </a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('web.help_page') }}">
+                                <i class="fas fa-question-circle me-1"></i>Help
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Off-canvas menu for mobile -->
-    <div id="offcanvas-nav" uk-offcanvas="overlay: true">
-        <div class="uk-offcanvas-bar">
-            <ul class="uk-nav uk-nav-default">
-                {% if session.user_id %}
-                    <li><a href="{{ url_for('web.dashboard') }}">
-                        <i class="fas fa-tachometer-alt uk-margin-small-right"></i>Dashboard
-                    </a></li>
-                    <li><a href="{{ url_for('web.upload_page') }}">
-                        <i class="fas fa-upload uk-margin-small-right"></i>Upload
-                    </a></li>
-                    <li><a href="{{ url_for('web.gallery') }}">
-                        <i class="fas fa-images uk-margin-small-right"></i>Gallery
-                    </a></li>
-                    <li><a href="{{ url_for('web.help_page') }}">
-                        <i class="fas fa-question-circle uk-margin-small-right"></i>Help
-                    </a></li>
-                    <li class="uk-nav-divider"></li>
-                    <li><a href="{{ url_for('web.logout') }}">
-                        <i class="fas fa-sign-out-alt uk-margin-small-right"></i>Logout
-                    </a></li>
-                {% else %}
-                    <li><a href="{{ url_for('web.help_page') }}">
-                        <i class="fas fa-question-circle uk-margin-small-right"></i>Help
-                    </a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="uk-container uk-margin-top">
+            <div class="container mt-3">
                 {% for category, message in messages %}
-                    <div class="uk-alert uk-alert-{{ 'danger' if category == 'error' else ('success' if category == 'success' else 'primary') }}" uk-alert>
-                        <a class="uk-alert-close" uk-close></a>
-                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else ('check-circle' if category == 'success' else 'info-circle') }} uk-margin-small-right"></i>
+                    <div class="alert alert-{{ 'danger' if category == 'error' else ('success' if category == 'success' else 'info') }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else ('check-circle' if category == 'success' else 'info-circle') }} me-2"></i>
                         {{ message|safe }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             </div>
@@ -119,40 +97,39 @@
     </main>
 
     <!-- Footer -->
-    <footer class="uk-section uk-section-secondary uk-light uk-margin-large-top" style="background: #212529; color: #f8f9fa;">
-        <div class="uk-container">
-            <div class="uk-grid-match" uk-grid>
-                <div class="uk-width-1-2@m">
-                    <h5 class="uk-text-bold">
-                        <i class="fas fa-bolt uk-margin-small-right"></i>Pixelz
-                    </h5>
-                    <p class="uk-margin-small">Professional image processing made simple</p>
-                    <p class="uk-text-small uk-text-muted">Built with Flask, Pillow, and UIKit</p>
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-bolt me-2"></i>Pixelz</h5>
+                    <p class="mb-2">Professional image processing made simple</p>
+                    <p class="text-muted small">Built with Flask, Pillow, and Bootstrap</p>
                 </div>
-                <div class="uk-width-1-2@m uk-text-right@m">
-                    <h6 class="uk-text-bold">Features</h6>
-                    <ul class="uk-list uk-text-small" style="list-style: none; padding: 0;">
-                        <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Resize & Crop</li>
-                        <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Filters & Effects</li>
-                        <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Watermarks</li>
-                        <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Format Conversion</li>
+                <div class="col-md-6 text-md-end">
+                    <h6>Features</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-check me-1 text-success"></i>Resize & Crop</li>
+                        <li><i class="fas fa-check me-1 text-success"></i>Filters & Effects</li>
+                        <li><i class="fas fa-check me-1 text-success"></i>Watermarks</li>
+                        <li><i class="fas fa-check me-1 text-success"></i>Format Conversion</li>
                     </ul>
                 </div>
             </div>
-            <hr class="uk-margin-medium">
-            <div class="uk-text-center">
-                <small class="uk-text-muted">
-                    &copy; 2024 Pixelz | 
-                    <a href="#" class="uk-link-muted">Privacy</a> | 
-                    <a href="#" class="uk-link-muted">Terms</a>
-                </small>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <small class="text-muted">
+                        &copy; 2024 Pixelz | 
+                        <a href="#" class="text-decoration-none">Privacy</a> | 
+                        <a href="#" class="text-decoration-none">Terms</a>
+                    </small>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     {% block extra_js %}{% endblock %}

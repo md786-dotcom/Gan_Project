@@ -1,4 +1,4 @@
-/* Pixelz - Professional Image Processing Platform */
+/* Pixelz - Custom Styles */
 
 /* Root Variables */
 :root {
@@ -24,32 +24,30 @@ body {
     color: var(--dark-color);
 }
 
-/* UIKit Component Overrides to match original Bootstrap styling */
-
 /* Navigation */
-.uk-navbar-container {
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.navbar {
     backdrop-filter: blur(10px);
     background: rgba(79, 70, 229, 0.95) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.uk-navbar-item, .uk-navbar-nav > li > a {
+.nav-link {
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
-.uk-navbar-nav > li > a:hover {
+.nav-link:hover {
     transform: translateY(-2px);
     color: var(--secondary-color) !important;
 }
 
-.uk-navbar-item.uk-logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
 /* Cards */
-.uk-card {
+.card {
     border: none;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
@@ -58,12 +56,12 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.uk-card:hover {
+.card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
 }
 
-.uk-card-header {
+.card-header {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
     border: none;
@@ -72,7 +70,7 @@ body {
 }
 
 /* Buttons */
-.uk-button {
+.btn {
     border-radius: var(--border-radius);
     font-weight: 500;
     transition: all 0.3s ease;
@@ -80,29 +78,40 @@ body {
     box-shadow: var(--shadow);
 }
 
-.uk-button:hover {
+.btn:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
-.uk-button-primary {
+.btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
 }
 
-.uk-button-secondary {
+.btn-success {
     background: linear-gradient(135deg, var(--success-color), #059669);
 }
 
-.uk-button-danger {
+.btn-danger {
     background: linear-gradient(135deg, var(--danger-color), #dc2626);
 }
 
-.uk-button-warning {
+.btn-warning {
     background: linear-gradient(135deg, var(--warning-color), #d97706);
 }
 
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
 /* Forms */
-.uk-input, .uk-select, .uk-textarea {
+.form-control, .form-select {
     border-radius: var(--border-radius);
     border: 2px solid #e2e8f0;
     padding: 12px 16px;
@@ -110,14 +119,13 @@ body {
     background: rgba(255, 255, 255, 0.9);
 }
 
-.uk-input:focus, .uk-select:focus, .uk-textarea:focus {
+.form-control:focus, .form-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     background: white;
-    outline: none;
 }
 
-.uk-form-label {
+.form-label {
     font-weight: 600;
     color: var(--dark-color);
     margin-bottom: 8px;
@@ -185,7 +193,7 @@ body {
     opacity: 1;
 }
 
-.image-overlay .uk-button {
+.image-overlay .btn {
     margin: 0 5px;
 }
 
@@ -359,44 +367,35 @@ body {
 }
 
 /* Alerts */
-.uk-alert {
+.alert {
     border: none;
     border-radius: var(--border-radius);
     border-left: 4px solid;
     font-weight: 500;
 }
 
-.uk-alert-success {
+.alert-success {
     background: rgba(16, 185, 129, 0.1);
     border-left-color: var(--success-color);
     color: #065f46;
 }
 
-.uk-alert-danger {
+.alert-danger {
     background: rgba(239, 68, 68, 0.1);
     border-left-color: var(--danger-color);
     color: #991b1b;
 }
 
-.uk-alert-primary {
-    background: rgba(79, 70, 229, 0.1);
-    border-left-color: var(--primary-color);
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border-left-color: var(--info-color);
     color: #1e40af;
 }
 
-.uk-alert-warning {
+.alert-warning {
     background: rgba(245, 158, 11, 0.1);
     border-left-color: var(--warning-color);
     color: #92400e;
-}
-
-/* Modal Enhancements */
-.uk-modal-dialog {
-    border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-lg);
 }
 
 /* Responsive Design */
@@ -414,7 +413,7 @@ body {
         padding: 24px;
     }
     
-    .uk-card {
+    .card {
         margin-bottom: 20px;
     }
 }
