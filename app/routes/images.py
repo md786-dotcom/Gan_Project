@@ -264,7 +264,7 @@ def transform_image(image_id):
             return redirect(url_for('web.transform_page', image_id=image_id))
         
         # Read original image from local storage
-        image_path = f"static/{image.s3_key}"  # s3_key contains relative path
+        image_path = f"app/static/{image.s3_key}"  # s3_key contains relative path
         if not file_storage.file_exists(image_path):
             error_msg = 'Original image file not found'
             if request.is_json:

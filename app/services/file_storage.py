@@ -10,8 +10,8 @@ class LocalFileStorage:
     """Local file storage service - secure and simple alternative to cloud storage."""
     
     def __init__(self):
-        self.base_upload_dir = Path('static/uploads')
-        self.base_processed_dir = Path('static/processed')
+        self.base_upload_dir = Path('app/static/uploads')
+        self.base_processed_dir = Path('app/static/processed')
         
         # Create directories if they don't exist
         self.base_upload_dir.mkdir(parents=True, exist_ok=True)
@@ -28,6 +28,14 @@ class LocalFileStorage:
         unique_id = str(uuid.uuid4())[:8]
         
         return f"{timestamp}_{unique_id}_{name}{ext}"
+    
+    def _generate_url(self, relative_path):
+        """Generate URL for static file with fallback for no request context."""
+        try:
+            return url_for('static', filename=relative_path, _external=True)
+        except RuntimeError:
+            # Fallback for when no request context is available
+            return f"/static/{relative_path}"
     
     def save_upload(self, file_obj, user_id, original_filename):
         """
@@ -55,7 +63,7 @@ class LocalFileStorage:
             
             # Generate URL for accessing the file
             relative_path = f"uploads/{user_id}/{filename}"
-            file_url = url_for('static', filename=relative_path, _external=True)
+            file_url = self._generate_url(relative_path)
             
             return {
                 'filename': filename,
@@ -101,7 +109,7 @@ class LocalFileStorage:
             
             # Generate URL
             relative_path = f"processed/{user_id}/{filename}"
-            file_url = url_for('static', filename=relative_path, _external=True)
+            file_url = self._generate_url(relative_path)
             
             return {
                 'filename': filename,
@@ -113,19 +121,21 @@ class LocalFileStorage:
         except Exception as e:
             raise Exception(f"Failed to save processed file: {str(e)}")
     
-    def delete_file(self, file_path):
+    def delete_file(self, relative_path):
         """
         Delete file from local storage.
         
         Args:
-            file_path: Path to the file to delete
+            relative_path: Relative path to the file to delete (e.g., 'uploads/1/file.png')
             
         Returns:
             bool: True if successful, False otherwise
         """
         try:
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            # Convert relative path to full path
+            full_path = f"app/static/{relative_path}"
+            if os.path.exists(full_path):
+                os.remove(full_path)
                 return True
             return False
         except Exception as e:
@@ -137,12 +147,17 @@ class LocalFileStorage:
         Check if file exists in local storage.
         
         Args:
-            file_path: Path to check
+            file_path: Path to check (can be full path or relative)
             
         Returns:
             bool: True if file exists, False otherwise
         """
-        return os.path.exists(file_path)
+        # Handle both full paths and relative paths
+        if file_path.startswith('app/static/'):
+            return os.path.exists(file_path)
+        else:
+            # Assume relative path, prepend app/static/
+            return os.path.exists(f"app/static/{file_path}")
     
     def get_file_size(self, file_path):
         """Get file size in bytes."""
@@ -175,7 +190,7 @@ class LocalFileStorage:
                         'filename': file_path.name,
                         'path': str(file_path),
                         'size': self.get_file_size(file_path),
-                        'url': url_for('static', filename=f"uploads/{user_id}/{file_path.name}", _external=True)
+                        'url': self._generate_url(f"uploads/{user_id}/{file_path.name}")
                     })
         
         # Get processed files
@@ -186,7 +201,7 @@ class LocalFileStorage:
                         'filename': file_path.name,
                         'path': str(file_path),
                         'size': self.get_file_size(file_path),
-                        'url': url_for('static', filename=f"processed/{user_id}/{file_path.name}", _external=True)
+                        'url': self._generate_url(f"processed/{user_id}/{file_path.name}")
                     })
         
         return {
