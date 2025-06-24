@@ -182,7 +182,7 @@ function deleteImage(imageId, button) {
     fetch(`/api/images/${imageId}`, {
         method: 'DELETE',
         headers: {
-            'X-CSRFToken': getCSRFToken(),
+            'X-CSRF-Token': getCSRFToken(),
             'Content-Type': 'application/json'
         }
     })

@@ -412,13 +412,17 @@ function uploadFile() {
     });
     
     xhr.open('POST', form.action);
-    xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
+    xhr.setRequestHeader('X-CSRF-Token', getCSRFToken());
     xhr.send(formData);
 }
 
-// Re-initialize file upload for this page
+// Initialize upload page - let main.js handle the file upload logic
 document.addEventListener('DOMContentLoaded', function() {
-    initializeFileUpload();
+    // Load recent uploads
+    loadRecentUploads();
+    
+    // Let main.js initialize the file upload functionality
+    // No need to override since main.js handles everything correctly
 });
 </script>
 {% endblock %}

@@ -188,7 +188,7 @@ function uploadFile() {
     });
     
     xhr.open('POST', '/api/images/upload');
-    xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
+    xhr.setRequestHeader('X-CSRF-Token', getCSRFToken());
     xhr.send(formData);
 }
 
@@ -222,7 +222,7 @@ function deleteImage(imageId) {
     fetch(`/api/images/${imageId}`, {
         method: 'DELETE',
         headers: {
-            'X-CSRFToken': getCSRFToken(),
+            'X-CSRF-Token': getCSRFToken(),
             'Content-Type': 'application/json'
         }
     })
