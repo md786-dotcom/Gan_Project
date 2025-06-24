@@ -561,23 +561,23 @@ function openFormatModal() {
 function initializeFormatSelection() {
     console.log('Initializing format selection...');
     
-    const formatOptions = document.querySelectorAll('.format-option');
-    const confirmBtn = document.getElementById('confirmFormat');
-    const selectionAlert = document.getElementById('formatSelection');
-    const selectionText = document.getElementById('selectedFormatText');
-    
-    console.log('Found format options:', formatOptions.length);
-    console.log('Confirm button:', confirmBtn);
-    
-    if (formatOptions.length === 0) {
-        console.error('No format options found!');
-        return;
-    }
-    
-    if (!confirmBtn) {
-        console.error('Confirm button not found!');
-        return;
-    }
+    // Wait a bit for modal to be fully rendered
+    setTimeout(() => {
+        const formatOptions = document.querySelectorAll('.format-option');
+        const confirmBtn = document.getElementById('confirmFormat');
+        
+        console.log('Found format options:', formatOptions.length);
+        console.log('Confirm button:', confirmBtn);
+        
+        if (formatOptions.length === 0) {
+            console.error('No format options found!');
+            return;
+        }
+        
+        if (!confirmBtn) {
+            console.error('Confirm button not found!');
+            return;
+        }
     
     formatOptions.forEach((option, index) => {
         console.log(`Setting up option ${index}:`, option.dataset.format);
@@ -604,8 +604,11 @@ function initializeFormatSelection() {
             
             // Update UI
             updateFormatSelection();
-            confirmBtn.disabled = false;
-            confirmBtn.style.pointerEvents = 'auto';
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.style.pointerEvents = 'auto';
+                console.log('Confirm button enabled');
+            }
         });
     });
     
@@ -637,12 +640,28 @@ function initializeFormatSelection() {
     });
     
     console.log('Format selection initialization complete');
+    }, 100); // End setTimeout
 }
 
 function updateFormatSelection() {
+    console.log('updateFormatSelection called with selectedFormat:', selectedFormat);
+    
     const selectionAlert = document.getElementById('formatSelection');
     const selectionText = document.getElementById('selectedFormatText');
     const currentFormat = '{{ image.mime_type.split("/")[-1].upper() }}';
+    
+    console.log('selectionAlert:', selectionAlert);
+    console.log('selectionText:', selectionText);
+    
+    if (!selectionAlert) {
+        console.error('formatSelection element not found!');
+        return;
+    }
+    
+    if (!selectionText) {
+        console.error('selectedFormatText element not found!');
+        return;
+    }
     
     if (selectedFormat === '') {
         selectionText.textContent = `Keep original format (${currentFormat})`;
@@ -651,6 +670,7 @@ function updateFormatSelection() {
     }
     
     selectionAlert.classList.remove('d-none');
+    console.log('Format selection updated successfully');
 }
 
 function updateFormatPanel() {
