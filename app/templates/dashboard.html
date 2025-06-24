@@ -3,93 +3,97 @@
 {% block title %}Dashboard - Pixelz{% endblock %}
 
 {% block content %}
-<div class="uk-container uk-margin-large-top">
+<div class="uk-container" style="margin: 3rem auto;">
     <!-- Welcome Header -->
-    <div class="uk-margin-large-bottom">
-        <div class="uk-card uk-card-primary uk-card-body uk-border-rounded" style="background: var(--gradient-primary);">
-            <div class="uk-grid-match uk-flex-middle" uk-grid>
-                <div class="uk-width-expand@m">
-                    <h1 class="uk-card-title uk-margin-small-bottom uk-light">
-                        <i class="fas fa-sparkles uk-margin-small-right"></i>
-                        Welcome back, {{ user.email.split('@')[0].title() }}!
-                    </h1>
-                    <p class="uk-text-muted uk-light uk-margin-remove">
-                        Ready to transform some images? Upload new photos or manage your existing collection.
-                    </p>
-                </div>
-                <div class="uk-width-auto@m uk-text-right@m">
-                    <a href="{{ url_for('web.upload_page') }}" class="uk-button uk-button-default uk-button-large">
-                        <i class="fas fa-plus uk-margin-small-right"></i>Upload New Image
-                    </a>
+    <div class="uk-margin-medium-bottom">
+        <div>
+            <div class="uk-card uk-card-default" style="border: none; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); box-shadow: var(--shadow);">
+                <div class="uk-card-body" style="padding: 2rem;">
+                    <div class="uk-grid uk-flex-middle" uk-grid>
+                        <div class="uk-width-expand@m">
+                            <h1 style="color: white; font-size: 1.75rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-sparkles uk-margin-small-right"></i>
+                                Welcome back, {{ user.email.split('@')[0].title() }}!
+                            </h1>
+                            <p style="color: rgba(255,255,255,0.7); margin: 0;">
+                                Ready to transform some images? Upload new photos or manage your existing collection.
+                            </p>
+                        </div>
+                        <div class="uk-width-auto@m uk-text-right@m">
+                            <a href="{{ url_for('web.upload_page') }}" class="uk-button uk-button-default uk-button-large" style="background: white; color: var(--primary-color);">
+                                <i class="fas fa-plus uk-margin-small-right"></i>Upload New Image
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="uk-grid-match uk-child-width-1-4@l uk-child-width-1-2@m uk-margin-large-bottom" uk-grid>
+    <div class="uk-grid uk-child-width-1-4@l uk-child-width-1-2@m uk-margin-large-bottom" uk-grid style="gap: 1.5rem;">
         <div>
             <div class="stat-card">
-                <i class="fas fa-images uk-text-primary uk-margin-bottom" style="font-size: 2.5rem;"></i>
+                <i class="fas fa-images" style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 1rem;"></i>
                 <div class="stat-number">{{ images.total }}</div>
-                <div class="uk-text-muted uk-text-small uk-text-uppercase">Total Images</div>
+                <div class="stat-label">Total Images</div>
             </div>
         </div>
         <div>
             <div class="stat-card">
-                <i class="fas fa-magic uk-text-success uk-margin-bottom" style="font-size: 2.5rem;"></i>
+                <i class="fas fa-magic" style="color: var(--success-color); font-size: 2.5rem; margin-bottom: 1rem;"></i>
                 <div class="stat-number">{{ images.items|selectattr('transformations')|list|length }}</div>
-                <div class="uk-text-muted uk-text-small uk-text-uppercase">Processed</div>
+                <div class="stat-label">Processed</div>
             </div>
         </div>
         <div>
             <div class="stat-card">
-                <i class="fas fa-cloud-upload-alt uk-text-info uk-margin-bottom" style="font-size: 2.5rem;"></i>
+                <i class="fas fa-cloud-upload-alt" style="color: var(--info-color); font-size: 2.5rem; margin-bottom: 1rem;"></i>
                 <div class="stat-number">{{ (images.items|sum(attribute='file_size') / 1024 / 1024)|round(1) }}MB</div>
-                <div class="uk-text-muted uk-text-small uk-text-uppercase">Total Size</div>
+                <div class="stat-label">Total Size</div>
             </div>
         </div>
         <div>
             <div class="stat-card">
-                <i class="fas fa-calendar uk-text-warning uk-margin-bottom" style="font-size: 2.5rem;"></i>
+                <i class="fas fa-calendar" style="color: var(--warning-color); font-size: 2.5rem; margin-bottom: 1rem;"></i>
                 <div class="stat-number">{{ user.created_at.strftime('%B %Y') }}</div>
-                <div class="uk-text-muted uk-text-small uk-text-uppercase">Member Since</div>
+                <div class="stat-label">Member Since</div>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="row g-4 mb-5">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt me-2"></i>Quick Actions
+    <div class="uk-margin-large-bottom">
+        <div>
+            <div class="uk-card uk-card-default">
+                <div class="uk-card-header">
+                    <h5 class="uk-margin-remove">
+                        <i class="fas fa-bolt uk-margin-small-right"></i>Quick Actions
                     </h5>
                 </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <a href="{{ url_for('web.upload_page') }}" class="btn btn-outline-primary w-100 py-3">
-                                <i class="fas fa-upload d-block mb-2" style="font-size: 1.5rem;"></i>
+                <div class="uk-card-body">
+                    <div class="uk-grid uk-child-width-1-4@l uk-child-width-1-2@m" uk-grid style="gap: 1rem;">
+                        <div>
+                            <a href="{{ url_for('web.upload_page') }}" class="uk-button uk-button-default uk-width-1-1" style="padding: 1.5rem; border: 2px solid var(--primary-color); color: var(--primary-color);">
+                                <i class="fas fa-upload uk-display-block uk-margin-bottom" style="font-size: 1.5rem;"></i>
                                 Upload Image
                             </a>
                         </div>
-                        <div class="col-md-3">
-                            <a href="{{ url_for('web.gallery') }}" class="btn btn-outline-success w-100 py-3">
-                                <i class="fas fa-images d-block mb-2" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <a href="{{ url_for('web.gallery') }}" class="uk-button uk-button-default uk-width-1-1" style="padding: 1.5rem; border: 2px solid var(--success-color); color: var(--success-color);">
+                                <i class="fas fa-images uk-display-block uk-margin-bottom" style="font-size: 1.5rem;"></i>
                                 View Gallery
                             </a>
                         </div>
-                        <div class="col-md-3">
-                            <a href="{{ url_for('web.help_page') }}" class="btn btn-outline-info w-100 py-3">
-                                <i class="fas fa-question-circle d-block mb-2" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <a href="{{ url_for('web.help_page') }}" class="uk-button uk-button-default uk-width-1-1" style="padding: 1.5rem; border: 2px solid var(--info-color); color: var(--info-color);">
+                                <i class="fas fa-question-circle uk-display-block uk-margin-bottom" style="font-size: 1.5rem;"></i>
                                 Help & Guide
                             </a>
                         </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-outline-warning w-100 py-3" onclick="downloadAllImages()">
-                                <i class="fas fa-download d-block mb-2" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <button class="uk-button uk-button-default uk-width-1-1" style="padding: 1.5rem; border: 2px solid var(--warning-color); color: var(--warning-color);" onclick="downloadAllImages()">
+                                <i class="fas fa-download uk-display-block uk-margin-bottom" style="font-size: 1.5rem;"></i>
                                 Download All
                             </button>
                         </div>
@@ -100,44 +104,44 @@
     </div>
 
     <!-- Recent Images -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-clock me-2"></i>Recent Images
+    <div>
+        <div>
+            <div class="uk-card uk-card-default">
+                <div class="uk-card-header uk-flex uk-flex-between uk-flex-middle">
+                    <h5 class="uk-margin-remove">
+                        <i class="fas fa-clock uk-margin-small-right"></i>Recent Images
                         {% if images.total > 0 %}
-                            <span class="badge bg-primary ms-2">{{ images.total }}</span>
+                            <span class="uk-badge" style="background: var(--primary-color); margin-left: 0.5rem;">{{ images.total }}</span>
                         {% endif %}
                     </h5>
                     {% if images.total > 12 %}
-                        <a href="{{ url_for('web.gallery') }}" class="btn btn-sm btn-outline-primary">
-                            View All <i class="fas fa-arrow-right ms-1"></i>
+                        <a href="{{ url_for('web.gallery') }}" class="uk-button uk-button-primary uk-button-small">
+                            View All <i class="fas fa-arrow-right uk-margin-small-left"></i>
                         </a>
                     {% endif %}
                 </div>
-                <div class="card-body">
+                <div class="uk-card-body">
                     {% if images.items %}
-                        <div class="row g-3" id="imageGallery">
+                        <div class="uk-grid uk-child-width-1-4@l uk-child-width-1-3@m uk-child-width-1-2@s" uk-grid style="gap: 1rem;" id="imageGallery">
                             {% for image in images.items %}
-                                <div class="col-lg-3 col-md-4 col-sm-6">
-                                    <div class="image-card position-relative">
+                                <div>
+                                    <div class="image-card uk-position-relative">
                                         <img src="{{ image.s3_url }}" alt="{{ image.original_name }}" 
-                                             class="img-fluid w-100 h-100 object-fit-cover rounded" 
-                                             style="aspect-ratio: 1; cursor: pointer;"
+                                             class="uk-width-1-1 uk-height-1-1" 
+                                             style="object-fit: cover; aspect-ratio: 1; border-radius: var(--border-radius); cursor: pointer;"
                                              onclick="viewImage('{{ image.s3_url }}', '{{ image.original_name }}')">
                                         
                                         <div class="image-overlay">
-                                            <div class="btn-group-vertical">
+                                            <div class="uk-flex uk-flex-column" style="gap: 0.5rem;">
                                                 <a href="{{ url_for('web.transform_page', image_id=image.id) }}" 
-                                                   class="btn btn-primary btn-sm">
+                                                   class="uk-button uk-button-primary uk-button-small">
                                                     <i class="fas fa-magic"></i>
                                                 </a>
-                                                <button class="btn btn-success btn-sm" 
+                                                <button class="uk-button uk-button-secondary uk-button-small" 
                                                         onclick="downloadImage('{{ image.s3_url }}', '{{ image.original_name }}')">
                                                     <i class="fas fa-download"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-sm" 
+                                                <button class="uk-button uk-button-danger uk-button-small" 
                                                         onclick="deleteImage({{ image.id }}, this)">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -145,10 +149,10 @@
                                         </div>
                                         
                                         <!-- Image Info -->
-                                        <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-2 rounded-bottom">
-                                            <div class="small">
-                                                <div class="fw-semibold text-truncate">{{ image.original_name }}</div>
-                                                <div class="text-white-50">
+                                        <div class="uk-position-absolute uk-position-bottom uk-position-cover" style="background: rgba(0,0,0,0.75); color: white; padding: 0.5rem; border-radius: 0 0 var(--border-radius) var(--border-radius);">
+                                            <div style="font-size: 0.875rem;">
+                                                <div style="font-weight: 600;" class="uk-text-truncate">{{ image.original_name }}</div>
+                                                <div style="color: rgba(255,255,255,0.7);">
                                                     {{ image.width }}×{{ image.height }} • 
                                                     {{ (image.file_size / 1024)|round(1) }}KB •
                                                     {{ image.created_at.strftime('%m/%d/%Y') }}
@@ -157,9 +161,9 @@
                                         </div>
 
                                         {% if image.get_transformations() %}
-                                            <div class="position-absolute top-0 end-0 p-2">
-                                                <span class="badge bg-success">
-                                                    <i class="fas fa-magic me-1"></i>Processed
+                                            <div class="uk-position-absolute uk-position-top-right" style="padding: 0.5rem;">
+                                                <span class="uk-badge" style="background: var(--success-color);">
+                                                    <i class="fas fa-magic uk-margin-small-right"></i>Processed
                                                 </span>
                                             </div>
                                         {% endif %}
@@ -170,11 +174,11 @@
 
                         <!-- Pagination -->
                         {% if images.pages > 1 %}
-                            <nav aria-label="Image pagination" class="mt-4">
-                                <ul class="pagination justify-content-center">
+                            <nav class="uk-margin-top">
+                                <ul class="uk-pagination uk-flex-center">
                                     {% if images.has_prev %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ url_for('web.dashboard', page=images.prev_num) }}">
+                                        <li>
+                                            <a href="{{ url_for('web.dashboard', page=images.prev_num) }}">
                                                 <i class="fas fa-chevron-left"></i>
                                             </a>
                                         </li>
@@ -183,24 +187,24 @@
                                     {% for page in images.iter_pages() %}
                                         {% if page %}
                                             {% if page != images.page %}
-                                                <li class="page-item">
-                                                    <a class="page-link" href="{{ url_for('web.dashboard', page=page) }}">{{ page }}</a>
+                                                <li>
+                                                    <a href="{{ url_for('web.dashboard', page=page) }}">{{ page }}</a>
                                                 </li>
                                             {% else %}
-                                                <li class="page-item active">
-                                                    <span class="page-link">{{ page }}</span>
+                                                <li class="uk-active">
+                                                    <span>{{ page }}</span>
                                                 </li>
                                             {% endif %}
                                         {% else %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link">…</span>
+                                            <li class="uk-disabled">
+                                                <span>…</span>
                                             </li>
                                         {% endif %}
                                     {% endfor %}
                                     
                                     {% if images.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ url_for('web.dashboard', page=images.next_num) }}">
+                                        <li>
+                                            <a href="{{ url_for('web.dashboard', page=images.next_num) }}">
                                                 <i class="fas fa-chevron-right"></i>
                                             </a>
                                         </li>
@@ -210,14 +214,14 @@
                         {% endif %}
                     {% else %}
                         <!-- Empty State -->
-                        <div class="text-center py-5">
-                            <i class="fas fa-images display-1 text-muted mb-3"></i>
-                            <h4 class="text-muted mb-3">No Images Yet</h4>
-                            <p class="text-muted mb-4">
+                        <div class="uk-text-center" style="padding: 3rem 0;">
+                            <i class="fas fa-images uk-text-muted uk-margin-bottom" style="font-size: 4rem;"></i>
+                            <h4 class="uk-text-muted uk-margin-bottom">No Images Yet</h4>
+                            <p class="uk-text-muted uk-margin-bottom">
                                 Upload your first image to get started with professional image processing!
                             </p>
-                            <a href="{{ url_for('web.upload_page') }}" class="btn btn-primary btn-lg">
-                                <i class="fas fa-upload me-2"></i>Upload Your First Image
+                            <a href="{{ url_for('web.upload_page') }}" class="uk-button uk-button-primary uk-button-large">
+                                <i class="fas fa-upload uk-margin-small-right"></i>Upload Your First Image
                             </a>
                         </div>
                     {% endif %}
@@ -228,22 +232,20 @@
 </div>
 
 <!-- Image Viewer Modal -->
-<div class="modal fade" id="imageViewerModal" tabindex="-1" aria-labelledby="imageViewerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageViewerModalLabel">Image Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="modalImage" src="" alt="" class="img-fluid rounded">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="modalDownloadBtn">
-                    <i class="fas fa-download me-2"></i>Download
-                </button>
-            </div>
+<div id="imageViewerModal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div>
+            <h5 class="uk-modal-title" id="imageViewerModalLabel">Image Preview</h5>
+        </div>
+        <div class="uk-text-center">
+            <img id="modalImage" src="" alt="" class="uk-width-1-1" style="border-radius: var(--border-radius);">
+        </div>
+        <div class="uk-flex uk-flex-right uk-margin-top">
+            <button type="button" class="uk-button uk-button-default uk-margin-small-right" uk-close>Close</button>
+            <button type="button" class="uk-button uk-button-primary" id="modalDownloadBtn">
+                <i class="fas fa-download uk-margin-small-right"></i>Download
+            </button>
         </div>
     </div>
 </div>
@@ -252,7 +254,7 @@
 {% block extra_js %}
 <script>
 function viewImage(imageUrl, imageName) {
-    const modal = new bootstrap.Modal(document.getElementById('imageViewerModal'));
+    UIkit.modal('#imageViewerModal').show();
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('imageViewerModalLabel');
     const downloadBtn = document.getElementById('modalDownloadBtn');
@@ -262,8 +264,6 @@ function viewImage(imageUrl, imageName) {
     modalTitle.textContent = imageName;
     
     downloadBtn.onclick = () => downloadImage(imageUrl, imageName);
-    
-    modal.show();
 }
 
 function downloadImage(imageUrl, imageName) {
@@ -283,17 +283,15 @@ function deleteImage(imageId, button) {
         return;
     }
     
-    const card = button.closest('.col-lg-3, .col-md-4, .col-sm-6');
+    const card = button.closest('[uk-grid] > div');
     const originalContent = card.innerHTML;
     
     // Show loading state
     card.innerHTML = `
-        <div class="image-card d-flex align-items-center justify-content-center">
-            <div class="text-center">
-                <div class="spinner-border text-primary mb-2" role="status">
-                    <span class="visually-hidden">Deleting...</span>
-                </div>
-                <div class="small text-muted">Deleting...</div>
+        <div class="image-card uk-flex uk-flex-center uk-flex-middle">
+            <div class="uk-text-center">
+                <div uk-spinner="ratio: 2" class="uk-margin-bottom"></div>
+                <div class="uk-text-small uk-text-muted">Deleting...</div>
             </div>
         </div>
     `;
@@ -359,7 +357,7 @@ function downloadAllImages() {
 
 function updateStats() {
     // Update image count if possible
-    const totalImages = document.querySelectorAll('#imageGallery .col-lg-3, #imageGallery .col-md-4, #imageGallery .col-sm-6').length;
+    const totalImages = document.querySelectorAll('#imageGallery [uk-grid] > div').length;
     const statNumber = document.querySelector('.stat-number');
     if (statNumber) {
         statNumber.textContent = totalImages;
@@ -370,21 +368,35 @@ function updateStats() {
         const gallery = document.getElementById('imageGallery');
         if (gallery) {
             gallery.innerHTML = `
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="fas fa-images display-1 text-muted mb-3"></i>
-                        <h4 class="text-muted mb-3">No Images Yet</h4>
-                        <p class="text-muted mb-4">
+                <div class="uk-width-1-1">
+                    <div class="uk-text-center" style="padding: 3rem 0;">
+                        <i class="fas fa-images uk-text-muted uk-margin-bottom" style="font-size: 4rem;"></i>
+                        <h4 class="uk-text-muted uk-margin-bottom">No Images Yet</h4>
+                        <p class="uk-text-muted uk-margin-bottom">
                             Upload your first image to get started with professional image processing!
                         </p>
-                        <a href="/upload" class="btn btn-primary btn-lg">
-                            <i class="fas fa-upload me-2"></i>Upload Your First Image
+                        <a href="/upload" class="uk-button uk-button-primary uk-button-large">
+                            <i class="fas fa-upload uk-margin-small-right"></i>Upload Your First Image
                         </a>
                     </div>
                 </div>
             `;
         }
     }
+}
+
+// Utility functions
+function showNotification(message, type) {
+    UIkit.notification({
+        message: message,
+        status: type,
+        pos: 'top-right',
+        timeout: 3000
+    });
+}
+
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }
 
 // Keyboard shortcuts

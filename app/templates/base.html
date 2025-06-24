@@ -20,31 +20,34 @@
 </head>
 <body class="{% block body_class %}{% endblock %}">
     <!-- Navigation -->
-    <nav class="uk-navbar-container uk-navbar-transparent uk-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" uk-navbar>
+    <nav class="uk-navbar-container uk-navbar-transparent" style="background: rgba(79, 70, 229, 0.95) !important; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);" uk-navbar>
         <div class="uk-container">
             <div class="uk-navbar-left">
-                <a class="uk-navbar-item uk-logo" href="{{ url_for('web.index') }}">
+                <a class="uk-navbar-item uk-logo uk-flex uk-flex-middle" href="{{ url_for('web.index') }}" style="font-size: 1.5rem; font-weight: 700; color: white;">
                     <i class="fas fa-bolt uk-margin-small-right"></i>
-                    <span class="uk-text-bold">Pixelz</span>
+                    <span>Pixelz</span>
                 </a>
             </div>
+            
             <div class="uk-navbar-right">
-                <ul class="uk-navbar-nav">
+                <button class="uk-navbar-toggle uk-hidden@m" uk-navbar-toggle-icon uk-toggle="target: #offcanvas-nav"></button>
+                
+                <ul class="uk-navbar-nav uk-visible@m">
                     {% if session.user_id %}
-                        <li><a href="{{ url_for('web.dashboard') }}">
+                        <li><a href="{{ url_for('web.dashboard') }}" style="font-weight: 500;">
                             <i class="fas fa-tachometer-alt uk-margin-small-right"></i>Dashboard
                         </a></li>
-                        <li><a href="{{ url_for('web.upload_page') }}">
+                        <li><a href="{{ url_for('web.upload_page') }}" style="font-weight: 500;">
                             <i class="fas fa-upload uk-margin-small-right"></i>Upload
                         </a></li>
-                        <li><a href="{{ url_for('web.gallery') }}">
+                        <li><a href="{{ url_for('web.gallery') }}" style="font-weight: 500;">
                             <i class="fas fa-images uk-margin-small-right"></i>Gallery
                         </a></li>
-                        <li><a href="{{ url_for('web.help_page') }}">
+                        <li><a href="{{ url_for('web.help_page') }}" style="font-weight: 500;">
                             <i class="fas fa-question-circle uk-margin-small-right"></i>Help
                         </a></li>
                         <li>
-                            <a href="#">
+                            <a href="#" style="font-weight: 500;">
                                 <i class="fas fa-user uk-margin-small-right"></i>{{ session.user_email }}
                             </a>
                             <div uk-dropdown>
@@ -56,7 +59,7 @@
                             </div>
                         </li>
                     {% else %}
-                        <li><a href="{{ url_for('web.help_page') }}">
+                        <li><a href="{{ url_for('web.help_page') }}" style="font-weight: 500;">
                             <i class="fas fa-question-circle uk-margin-small-right"></i>Help
                         </a></li>
                     {% endif %}
@@ -64,6 +67,36 @@
             </div>
         </div>
     </nav>
+
+    <!-- Off-canvas menu for mobile -->
+    <div id="offcanvas-nav" uk-offcanvas="overlay: true">
+        <div class="uk-offcanvas-bar">
+            <ul class="uk-nav uk-nav-default">
+                {% if session.user_id %}
+                    <li><a href="{{ url_for('web.dashboard') }}">
+                        <i class="fas fa-tachometer-alt uk-margin-small-right"></i>Dashboard
+                    </a></li>
+                    <li><a href="{{ url_for('web.upload_page') }}">
+                        <i class="fas fa-upload uk-margin-small-right"></i>Upload
+                    </a></li>
+                    <li><a href="{{ url_for('web.gallery') }}">
+                        <i class="fas fa-images uk-margin-small-right"></i>Gallery
+                    </a></li>
+                    <li><a href="{{ url_for('web.help_page') }}">
+                        <i class="fas fa-question-circle uk-margin-small-right"></i>Help
+                    </a></li>
+                    <li class="uk-nav-divider"></li>
+                    <li><a href="{{ url_for('web.logout') }}">
+                        <i class="fas fa-sign-out-alt uk-margin-small-right"></i>Logout
+                    </a></li>
+                {% else %}
+                    <li><a href="{{ url_for('web.help_page') }}">
+                        <i class="fas fa-question-circle uk-margin-small-right"></i>Help
+                    </a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -86,19 +119,19 @@
     </main>
 
     <!-- Footer -->
-    <footer class="uk-section uk-section-secondary uk-dark">
+    <footer class="uk-section uk-section-secondary uk-light uk-margin-large-top" style="background: #212529; color: #f8f9fa;">
         <div class="uk-container">
-            <div class="uk-grid-match uk-child-width-1-2@m" uk-grid>
-                <div>
+            <div class="uk-grid-match" uk-grid>
+                <div class="uk-width-1-2@m">
                     <h5 class="uk-text-bold">
-                        <i class="fas fa-bolt uk-margin-small-right uk-text-primary"></i>Pixelz
+                        <i class="fas fa-bolt uk-margin-small-right"></i>Pixelz
                     </h5>
                     <p class="uk-margin-small">Professional image processing made simple</p>
                     <p class="uk-text-small uk-text-muted">Built with Flask, Pillow, and UIKit</p>
                 </div>
-                <div class="uk-text-right@m">
+                <div class="uk-width-1-2@m uk-text-right@m">
                     <h6 class="uk-text-bold">Features</h6>
-                    <ul class="uk-list uk-text-small">
+                    <ul class="uk-list uk-text-small" style="list-style: none; padding: 0;">
                         <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Resize & Crop</li>
                         <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Filters & Effects</li>
                         <li><i class="fas fa-check uk-margin-small-right uk-text-success"></i>Watermarks</li>
@@ -108,11 +141,11 @@
             </div>
             <hr class="uk-margin-medium">
             <div class="uk-text-center">
-                <p class="uk-text-small uk-text-muted">
+                <small class="uk-text-muted">
                     &copy; 2024 Pixelz | 
                     <a href="#" class="uk-link-muted">Privacy</a> | 
                     <a href="#" class="uk-link-muted">Terms</a>
-                </p>
+                </small>
             </div>
         </div>
     </footer>
