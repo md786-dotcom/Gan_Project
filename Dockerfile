@@ -27,11 +27,11 @@ COPY . .
 RUN mkdir -p uploads processed static/uploads static/processed instance
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5001
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
 USER app
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "app:create_app()"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5001", "--workers", "2", "--timeout", "120", "app:create_app()"]
