@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Image - ImageProcessor{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-cloud-upload-alt text-primary me-3"></i>
+                    Upload Your Image
+                </h1>
+                <p class="lead text-muted">
+                    Upload your image and start transforming it with professional tools
+                </p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload me-2"></i>
+                        Select Image to Upload
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="uploadForm" method="POST" action="{{ url_for('images.upload_image') }}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        
+                        <!-- Upload Zone -->
+                        <div id="uploadZone" class="upload-zone mb-4">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-upload-alt mb-3"></i>
+                                <h5 class="mb-3">Drag & Drop Your Image Here</h5>
+                                <p class="text-muted mb-3">or click to browse your files</p>
+                                <input type="file" id="fileInput" name="file" accept="image/*" class="d-none" required>
+                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open me-2"></i>Browse Files
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- File Info -->
+                        <div id="fileInfo" class="alert alert-info d-none">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-file-image me-2"></i>
+                                        <span id="fileName">No file selected</span>
+                                    </h6>
+                                    <small class="text-muted">
+                                        Size: <span id="fileSize">0 KB</span>
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearFile()">
+                                        <i class="fas fa-times me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="text-center mb-4 d-none">
+                            <!-- Preview will be inserted here -->
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" class="mb-4 d-none">
+                            <label class="form-label fw-semibold">Upload Progress</label>
+                            <div class="progress">
+                                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Button -->
+                        <div class="text-center">
+                            <button type="submit" id="uploadBtn" class="btn btn-primary btn-lg px-5 d-none" disabled>
+                                <i class="fas fa-upload me-2"></i>Upload Image
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Upload Instructions -->
+            <div class="card mt-4 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-info-circle text-info me-2"></i>Upload Guidelines
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="small fw-semibold text-success mb-2">✓ Supported Formats</h6>
+                            <ul class="list-unstyled small mb-3">
+                                <li><i class="fas fa-check me-2 text-success"></i>JPEG (.jpg, .jpeg)</li>
+                                <li><i class="fas fa-check me-2 text-success"></i>PNG (.png)</li>
+                                <li><i class="fas fa-check me-2 text-success"></i>GIF (.gif)</li>
+                                <li><i class="fas fa-check me-2 text-success"></i>WebP (.webp)</li>
+                                <li><i class="fas fa-check me-2 text-success"></i>BMP (.bmp)</li>
+                                <li><i class="fas fa-check me-2 text-success"></i>TIFF (.tiff)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="small fw-semibold text-primary mb-2">📏 Size Limits</h6>
+                            <ul class="list-unstyled small mb-3">
+                                <li><i class="fas fa-info me-2 text-primary"></i>Maximum file size: 16MB</li>
+                                <li><i class="fas fa-info me-2 text-primary"></i>Minimum dimensions: 10×10px</li>
+                                <li><i class="fas fa-info me-2 text-primary"></i>Maximum dimensions: 8000×8000px</li>
+                                <li><i class="fas fa-info me-2 text-primary"></i>Recommended: Under 5MB for faster processing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning border-0 mb-0">
+                        <small>
+                            <i class="fas fa-shield-alt me-2"></i>
+                            <strong>Privacy:</strong> Your images are stored securely and are only accessible to you. 
+                            We never share your images with third parties.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Uploads -->
+            {% if user %}
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-history me-2"></i>Recent Uploads
+                        </h6>
+                        <a href="{{ url_for('web.dashboard') }}" class="btn btn-sm btn-outline-primary">
+                            View All <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentUploads">
+                            <!-- Recent uploads will be loaded here via AJAX -->
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <small class="text-muted">Loading recent uploads...</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecentUploads();
+});
+
+function clearFile() {
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    fileInput.value = '';
+    fileInfo.classList.add('d-none');
+    imagePreview.classList.add('d-none');
+    uploadBtn.classList.add('d-none');
+    uploadBtn.disabled = true;
+    
+    // Reset upload zone
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.classList.remove('dragover');
+}
+
+function handleFileSelect(file) {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff'];
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('Please select a valid image file', 'error');
+        return false;
+    }
+    
+    // Validate file size (16MB max)
+    const maxSize = 16 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showNotification('File size must be less than 16MB', 'error');
+        return false;
+    }
+    
+    // Update UI
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileInfo = document.getElementById('fileInfo');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    fileInfo.classList.remove('d-none');
+    uploadBtn.classList.remove('d-none');
+    uploadBtn.disabled = false;
+    
+    // Show preview
+    showImagePreview(file);
+    
+    return true;
+}
+
+function showImagePreview(file) {
+    const preview = document.getElementById('imagePreview');
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        preview.innerHTML = `
+            <div class="position-relative d-inline-block">
+                <img src="${e.target.result}" class="img-fluid rounded shadow-sm" 
+                     style="max-height: 300px; max-width: 100%;" alt="Preview">
+                <div class="position-absolute top-0 end-0 p-2">
+                    <span class="badge bg-success">
+                        <i class="fas fa-check me-1"></i>Ready to Upload
+                    </span>
+                </div>
+            </div>
+        `;
+        preview.classList.remove('d-none');
+        
+        // Add fade-in animation
+        preview.classList.add('fade-in');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function loadRecentUploads() {
+    const recentUploads = document.getElementById('recentUploads');
+    if (!recentUploads) return;
+    
+    fetch('/api/images/?per_page=3')
+        .then(response => response.json())
+        .then(data => {
+            if (data.images && data.images.length > 0) {
+                recentUploads.innerHTML = `
+                    <div class="row g-3">
+                        ${data.images.map(image => `
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="${image.s3_url}" alt="${image.original_name}" 
+                                                 class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div class="flex-grow-1 min-w-0">
+                                                <h6 class="mb-1 text-truncate">${image.original_name}</h6>
+                                                <small class="text-muted">
+                                                    ${image.width}×${image.height} • 
+                                                    ${Math.round(image.file_size / 1024)}KB
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <a href="/transform/${image.id}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-magic me-1"></i>Transform
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                recentUploads.innerHTML = `
+                    <div class="text-center py-3 text-muted">
+                        <i class="fas fa-images me-2"></i>
+                        No recent uploads found
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            recentUploads.innerHTML = `
+                <div class="text-center py-3 text-muted">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Unable to load recent uploads
+                </div>
+            `;
+        });
+}
+
+// Override the main.js file upload handler for this page
+function initializeFileUpload() {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadForm = document.getElementById('uploadForm');
+    
+    if (!uploadZone || !fileInput) return;
+    
+    // Drag and drop functionality
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', function() {
+        uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            if (handleFileSelect(files[0])) {
+                const dt = new DataTransfer();
+                dt.items.add(files[0]);
+                fileInput.files = dt.files;
+            }
+        }
+    });
+    
+    // Click to upload
+    uploadZone.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'BUTTON') {
+            fileInput.click();
+        }
+    });
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            handleFileSelect(this.files[0]);
+        }
+    });
+    
+    // Form submission
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            uploadFile();
+        });
+    }
+}
+
+function uploadFile() {
+    const form = document.getElementById('uploadForm');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const progressContainer = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('progressBar');
+    
+    if (!form || !form.checkValidity()) {
+        showNotification('Please select a valid image file', 'error');
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    // Show progress
+    progressContainer.classList.remove('d-none');
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+    
+    // Upload with progress tracking
+    const xhr = new XMLHttpRequest();
+    
+    xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable && progressBar) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            progressBar.style.width = percentComplete + '%';
+            progressBar.textContent = Math.round(percentComplete) + '%';
+        }
+    });
+    
+    xhr.addEventListener('load', function() {
+        if (xhr.status === 200 || xhr.status === 201) {
+            progressBar.classList.remove('progress-bar');
+            progressBar.classList.add('progress-bar', 'bg-success');
+            progressBar.textContent = 'Complete!';
+            
+            showNotification('Image uploaded successfully!', 'success');
+            
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1500);
+        } else {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showNotification(response.error || 'Upload failed', 'error');
+            } catch (e) {
+                showNotification('Upload failed', 'error');
+            }
+        }
+    });
+    
+    xhr.addEventListener('error', function() {
+        showNotification('Upload failed. Please check your connection and try again.', 'error');
+    });
+    
+    xhr.addEventListener('loadend', function() {
+        if (xhr.status !== 200 && xhr.status !== 201) {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Image';
+            
+            setTimeout(() => {
+                progressContainer.classList.add('d-none');
+                progressBar.style.width = '0%';
+                progressBar.textContent = '';
+                progressBar.classList.remove('bg-success');
+            }, 3000);
+        }
+    });
+    
+    xhr.open('POST', form.action);
+    xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
+    xhr.send(formData);
+}
+
+// Re-initialize file upload for this page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFileUpload();
+});
+</script>
+{% endblock %}

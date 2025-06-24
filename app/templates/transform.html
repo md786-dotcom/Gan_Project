@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block title %}Transform Image - ImageProcessor{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Image Preview Section -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-image me-2"></i>Image Preview
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="position-relative">
+                        <img id="imagePreview" src="{{ image.s3_url }}" alt="{{ image.original_name }}" 
+                             class="img-fluid rounded shadow-sm" style="max-height: 400px; width: auto;">
+                        
+                        <!-- Image Info Overlay -->
+                        <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-2 rounded-bottom">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small class="d-block">Dimensions</small>
+                                    <strong>{{ image.width }}×{{ image.height }}</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="d-block">Size</small>
+                                    <strong>{{ (image.file_size / 1024)|round(1) }}KB</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="d-block">Format</small>
+                                    <strong>{{ image.mime_type.split('/')[-1].upper() }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6 class="text-truncate">{{ image.original_name }}</h6>
+                        <small class="text-muted">Uploaded {{ moment(image.created_at).fromNow() }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h6>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="button" class="btn btn-outline-primary" onclick="downloadImage('{{ image.s3_url }}', '{{ image.original_name }}')">
+                            <i class="fas fa-download me-2"></i>Download Original
+                        </button>
+                        <a href="{{ url_for('web.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transformation Controls -->
+        <div class="col-lg-6">
+            <form id="transformForm" method="POST" action="{{ url_for('images.transform_image', image_id=image.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                
+                <!-- Resize Panel -->
+                <div class="transform-panel">
+                    <h5>
+                        <i class="fas fa-expand-arrows-alt me-2"></i>Resize & Dimensions
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="width" class="form-label">Width (px)</label>
+                            <input type="number" class="form-control preview-control" id="width" name="width" 
+                                   min="10" max="8000" placeholder="{{ image.width }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="height" class="form-label">Height (px)</label>
+                            <input type="number" class="form-control preview-control" id="height" name="height" 
+                                   min="10" max="8000" placeholder="{{ image.height }}">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="maintainAspectRatio" 
+                                       name="maintain_aspect_ratio" checked>
+                                <label class="form-check-label" for="maintainAspectRatio">
+                                    Maintain aspect ratio
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rotation & Flip Panel -->
+                <div class="transform-panel">
+                    <h5>
+                        <i class="fas fa-sync-alt me-2"></i>Rotate & Flip
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="rotate" class="form-label">Rotation</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="rotate" id="rotate0" value="0" checked>
+                                <label class="btn btn-outline-primary" for="rotate0">0°</label>
+                                
+                                <input type="radio" class="btn-check" name="rotate" id="rotate90" value="90">
+                                <label class="btn btn-outline-primary" for="rotate90">90°</label>
+                                
+                                <input type="radio" class="btn-check" name="rotate" id="rotate180" value="180">
+                                <label class="btn btn-outline-primary" for="rotate180">180°</label>
+                                
+                                <input type="radio" class="btn-check" name="rotate" id="rotate270" value="270">
+                                <label class="btn btn-outline-primary" for="rotate270">270°</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Flip</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="flip" id="flipNone" value="" checked>
+                                <label class="btn btn-outline-success" for="flipNone">None</label>
+                                
+                                <input type="radio" class="btn-check" name="flip" id="flipHorizontal" value="horizontal">
+                                <label class="btn btn-outline-success" for="flipHorizontal">
+                                    <i class="fas fa-arrows-alt-h me-1"></i>Horizontal
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="flip" id="flipVertical" value="vertical">
+                                <label class="btn btn-outline-success" for="flipVertical">
+                                    <i class="fas fa-arrows-alt-v me-1"></i>Vertical
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filters Panel -->
+                <div class="transform-panel">
+                    <h5>
+                        <i class="fas fa-palette me-2"></i>Filters & Effects
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Apply Filter</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check preview-control" name="filter" id="filterNone" value="" checked>
+                                <label class="btn btn-outline-info" for="filterNone">None</label>
+                                
+                                <input type="radio" class="btn-check preview-control" name="filter" id="filterGrayscale" value="grayscale">
+                                <label class="btn btn-outline-info" for="filterGrayscale">Grayscale</label>
+                                
+                                <input type="radio" class="btn-check preview-control" name="filter" id="filterSepia" value="sepia">
+                                <label class="btn btn-outline-info" for="filterSepia">Sepia</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watermark Panel -->
+                <div class="transform-panel">
+                    <h5>
+                        <i class="fas fa-copyright me-2"></i>Watermark
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="watermarkText" class="form-label">Watermark Text</label>
+                            <input type="text" class="form-control" id="watermarkText" name="watermark_text" 
+                                   placeholder="Enter watermark text (optional)" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="watermarkPosition" class="form-label">Position</label>
+                            <select class="form-select" id="watermarkPosition" name="watermark_position">
+                                <option value="bottom-right">Bottom Right</option>
+                                <option value="bottom-left">Bottom Left</option>
+                                <option value="top-right">Top Right</option>
+                                <option value="top-left">Top Left</option>
+                                <option value="center">Center</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="watermarkOpacity" class="form-label">
+                                Opacity: <span class="range-output">0.5</span>
+                            </label>
+                            <input type="range" class="form-range" id="watermarkOpacity" name="watermark_opacity" 
+                                   min="0.1" max="1" step="0.1" value="0.5">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Format & Quality Panel -->
+                <div class="transform-panel">
+                    <h5>
+                        <i class="fas fa-file-export me-2"></i>Output Format & Quality
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="format" class="form-label">Output Format</label>
+                            <select class="form-select" id="format" name="format">
+                                <option value="">Keep Original</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="png">PNG</option>
+                                <option value="webp">WebP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="quality" class="form-label">
+                                Quality: <span class="range-output">85</span>%
+                            </label>
+                            <input type="range" class="form-range" id="quality" name="quality" 
+                                   min="1" max="100" value="85">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="compress" name="compress">
+                                <label class="form-check-label" for="compress">
+                                    Apply compression for smaller file size
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="transform-panel">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-magic me-2"></i>Apply Transformations
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo me-2"></i>Reset All
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Transformation History -->
+    {% if image.get_transformations() %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Previous Transformations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for transformation in image.get_transformations() %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-capitalize">
+                                            <i class="fas fa-{{ 'expand-arrows-alt' if transformation.type == 'resize' else ('sync-alt' if transformation.type == 'rotate' else ('palette' if transformation.type == 'filter' else 'magic')) }} me-2"></i>
+                                            {{ transformation.type.replace('_', ' ') }}
+                                        </h6>
+                                        <div class="small text-muted">
+                                            {% if transformation.type == 'resize' %}
+                                                {{ transformation.width }}×{{ transformation.height }}px
+                                            {% elif transformation.type == 'rotate' %}
+                                                {{ transformation.angle }}° rotation
+                                            {% elif transformation.type == 'filter' %}
+                                                {{ transformation.filter_type }} filter
+                                            {% elif transformation.type == 'watermark' %}
+                                                "{{ transformation.text }}"
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Processing Modal -->
+<div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Processing...</span>
+                </div>
+                <h5>Processing Your Image</h5>
+                <p class="text-muted mb-0">Please wait while we apply your transformations...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize aspect ratio maintenance
+    const widthInput = document.getElementById('width');
+    const heightInput = document.getElementById('height');
+    const maintainAspectRatio = document.getElementById('maintainAspectRatio');
+    
+    const originalWidth = {{ image.width }};
+    const originalHeight = {{ image.height }};
+    const aspectRatio = originalWidth / originalHeight;
+    
+    function updateAspectRatio(changedInput) {
+        if (!maintainAspectRatio.checked) return;
+        
+        if (changedInput === widthInput && widthInput.value) {
+            const newHeight = Math.round(widthInput.value / aspectRatio);
+            heightInput.value = newHeight;
+        } else if (changedInput === heightInput && heightInput.value) {
+            const newWidth = Math.round(heightInput.value * aspectRatio);
+            widthInput.value = newWidth;
+        }
+    }
+    
+    widthInput.addEventListener('input', () => updateAspectRatio(widthInput));
+    heightInput.addEventListener('input', () => updateAspectRatio(heightInput));
+    
+    // Form submission
+    const form = document.getElementById('transformForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show processing modal
+        const modal = new bootstrap.Modal(document.getElementById('processingModal'));
+        modal.show();
+        
+        // Submit form
+        this.submit();
+    });
+});
+
+function resetForm() {
+    const form = document.getElementById('transformForm');
+    form.reset();
+    
+    // Reset preview
+    const preview = document.getElementById('imagePreview');
+    preview.style.filter = '';
+    
+    // Reset range outputs
+    const rangeOutputs = document.querySelectorAll('.range-output');
+    rangeOutputs.forEach(output => {
+        const input = output.parentElement.querySelector('input[type="range"]');
+        if (input) {
+            output.textContent = input.value;
+        }
+    });
+    
+    showNotification('Form reset to default values', 'info');
+}
+
+function downloadImage(imageUrl, imageName) {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = imageName || 'image';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showNotification('Download started!', 'success');
+}
+
+// Real-time preview updates
+function updatePreview() {
+    const preview = document.getElementById('imagePreview');
+    const filters = [];
+    
+    // Apply filter preview
+    const selectedFilter = document.querySelector('input[name="filter"]:checked');
+    if (selectedFilter && selectedFilter.value) {
+        if (selectedFilter.value === 'grayscale') {
+            filters.push('grayscale(100%)');
+        } else if (selectedFilter.value === 'sepia') {
+            filters.push('sepia(100%)');
+        }
+    }
+    
+    preview.style.filter = filters.join(' ');
+}
+
+// Add event listeners for preview updates
+document.querySelectorAll('.preview-control').forEach(control => {
+    control.addEventListener('change', updatePreview);
+});
+
+// Keyboard shortcuts for common transformations
+document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    switch(e.key) {
+        case 'g':
+        case 'G':
+            document.getElementById('filterGrayscale').checked = true;
+            updatePreview();
+            break;
+        case 's':
+        case 'S':
+            document.getElementById('filterSepia').checked = true;
+            updatePreview();
+            break;
+        case 'r':
+        case 'R':
+            if (e.ctrlKey || e.metaKey) return; // Don't interfere with browser refresh
+            resetForm();
+            e.preventDefault();
+            break;
+    }
+});
+
+// Tooltip for keyboard shortcuts
+document.addEventListener('DOMContentLoaded', function() {
+    const grayscaleBtn = document.querySelector('label[for="filterGrayscale"]');
+    const sepiaBtn = document.querySelector('label[for="filterSepia"]');
+    const resetBtn = document.querySelector('button[onclick="resetForm()"]');
+    
+    if (grayscaleBtn) grayscaleBtn.title = 'Grayscale Filter (Press G)';
+    if (sepiaBtn) sepiaBtn.title = 'Sepia Filter (Press S)';
+    if (resetBtn) resetBtn.title = 'Reset Form (Press R)';
+});
+</script>
+{% endblock %}

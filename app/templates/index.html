@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}ImageProcessor - Professional Image Processing Made Simple{% endblock %}
+
+{% block body_class %}landing-page{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <h1 class="hero-title fade-in">
+                    Transform Your Images with <span class="text-gradient">Professional Tools</span>
+                </h1>
+                <p class="hero-subtitle fade-in">
+                    Upload, edit, and download your images with powerful transformation tools. 
+                    No cloud setup required - everything works out of the box!
+                </p>
+                
+                {% if not session.user_id %}
+                <div class="d-flex gap-3 mb-4 fade-in">
+                    <button class="btn btn-primary btn-lg px-4 py-3" data-bs-toggle="modal" data-bs-target="#signupModal">
+                        <i class="fas fa-rocket me-2"></i>Get Started Free
+                    </button>
+                    <button class="btn btn-outline-light btn-lg px-4 py-3" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </button>
+                </div>
+                {% else %}
+                <div class="d-flex gap-3 mb-4 fade-in">
+                    <a href="{{ url_for('web.dashboard') }}" class="btn btn-primary btn-lg px-4 py-3">
+                        <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('web.upload_page') }}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-upload me-2"></i>Upload Image
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div class="d-flex align-items-center gap-4 text-white-50 fade-in">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle me-2 text-success"></i>
+                        <small>No registration required to try</small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-shield-alt me-2 text-success"></i>
+                        <small>Secure & Private</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 text-center fade-in">
+                <div class="position-relative">
+                    <i class="fas fa-camera-retro display-1 text-white mb-4" style="font-size: 8rem; opacity: 0.9;"></i>
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                        <div class="bg-white bg-opacity-10 rounded-circle p-4" style="backdrop-filter: blur(10px);">
+                            <i class="fas fa-magic text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">Powerful Image Processing Features</h2>
+                <p class="lead text-muted">Everything you need to transform your images professionally</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 text-center hover-lift">
+                    <div class="card-body">
+                        <i class="feature-icon fas fa-expand-arrows-alt"></i>
+                        <h5 class="card-title">Resize & Crop</h5>
+                        <p class="card-text">
+                            Intelligently resize images while maintaining aspect ratio, or crop to exact dimensions.
+                        </p>
+                        <ul class="list-unstyled small text-muted">
+                            <li><i class="fas fa-check text-success me-1"></i>Smart aspect ratio preservation</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Custom dimensions</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Batch processing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center hover-lift">
+                    <div class="card-body">
+                        <i class="feature-icon fas fa-palette"></i>
+                        <h5 class="card-title">Filters & Effects</h5>
+                        <p class="card-text">
+                            Apply professional filters and effects to enhance your images with one-click transformations.
+                        </p>
+                        <ul class="list-unstyled small text-muted">
+                            <li><i class="fas fa-check text-success me-1"></i>Grayscale & Sepia</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Brightness & Contrast</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Artistic filters</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center hover-lift">
+                    <div class="card-body">
+                        <i class="feature-icon fas fa-sync-alt"></i>
+                        <h5 class="card-title">Rotate & Flip</h5>
+                        <p class="card-text">
+                            Rotate images to any angle or flip horizontally/vertically with precision controls.
+                        </p>
+                        <ul class="list-unstyled small text-muted">
+                            <li><i class="fas fa-check text-success me-1"></i>Any degree rotation</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Horizontal/Vertical flip</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Auto-crop borders</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center hover-lift">
+                    <div class="card-body">
+                        <i class="feature-icon fas fa-copyright"></i>
+                        <h5 class="card-title">Watermarks</h5>
+                        <p class="card-text">
+                            Add custom text watermarks with adjustable opacity and positioning to protect your work.
+                        </p>
+                        <ul class="list-unstyled small text-muted">
+                            <li><i class="fas fa-check text-success me-1"></i>Custom text & fonts</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Adjustable opacity</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Multiple positions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center hover-lift">
+                    <div class="card-body">
+                        <i class="feature-icon fas fa-file-export"></i>
+                        <h5 class="card-title">Format Conversion</h5>
+                        <p class="card-text">
+                            Convert between popular image formats (JPEG, PNG, WebP) with quality controls.
+                        </p>
+                        <ul class="list-unstyled small text-muted">
+                            <li><i class="fas fa-check text-success me-1"></i>JPEG, PNG, WebP support</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Quality optimization</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Size compression</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center hover-lift">
+                    <div class="card-body">
+                        <i class="feature-icon fas fa-compress"></i>
+                        <h5 class="card-title">Smart Compression</h5>
+                        <p class="card-text">
+                            Reduce file sizes while maintaining visual quality with advanced compression algorithms.
+                        </p>
+                        <ul class="list-unstyled small text-muted">
+                            <li><i class="fas fa-check text-success me-1"></i>Lossless optimization</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Custom quality settings</li>
+                            <li><i class="fas fa-check text-success me-1"></i>Web optimization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+                <p class="lead text-muted">Get started in just three simple steps</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <span class="h3 mb-0">1</span>
+                </div>
+                <h5>Upload Your Image</h5>
+                <p class="text-muted">
+                    Simply drag and drop your image or click to browse. 
+                    Supports JPEG, PNG, GIF, and WebP formats up to 16MB.
+                </p>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <span class="h3 mb-0">2</span>
+                </div>
+                <h5>Apply Transformations</h5>
+                <p class="text-muted">
+                    Use our intuitive controls to resize, rotate, add filters, 
+                    watermarks, and more. See changes in real-time.
+                </p>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <span class="h3 mb-0">3</span>
+                </div>
+                <h5>Download Results</h5>
+                <p class="text-muted">
+                    Download your processed image in your preferred format. 
+                    All transformations are saved to your account.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if not session.user_id %}
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-6 fw-bold mb-3">Ready to Transform Your Images?</h2>
+        <p class="lead mb-4">Join thousands of users who trust ImageProcessor for their image editing needs</p>
+        <button class="btn btn-light btn-lg px-5 py-3" data-bs-toggle="modal" data-bs-target="#signupModal">
+            <i class="fas fa-rocket me-2"></i>Start Processing Images Now
+        </button>
+    </div>
+</section>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="loginModalLabel">
+                    <i class="fas fa-sign-in-alt me-2 text-primary"></i>Sign In to Your Account
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('web.web_login') }}" class="needs-validation" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    
+                    <div class="mb-3">
+                        <label for="loginEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="loginEmail" name="email" required>
+                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" name="password" required>
+                        <div class="invalid-feedback">Password is required.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Don't have an account? 
+                        <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#signupModal" class="text-decoration-none">Sign up here</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="signupModalLabel">
+                    <i class="fas fa-user-plus me-2 text-primary"></i>Create Your Account
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info border-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Welcome!</strong> Create your account to start processing images. No credit card required.
+                </div>
+                
+                <form method="POST" action="{{ url_for('web.web_signup') }}" class="needs-validation" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    
+                    <div class="mb-3">
+                        <label for="signupEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="signupEmail" name="email" required>
+                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                        <div class="form-text">We'll never share your email with anyone else.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="signupPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="signupPassword" name="password" minlength="6" required>
+                        <div class="invalid-feedback">Password must be at least 6 characters long.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                        <div class="invalid-feedback">Please confirm your password.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-rocket me-2"></i>Create Account & Start Processing
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Already have an account? 
+                        <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal" class="text-decoration-none">Sign in here</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Password confirmation validation
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('signupPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    
+    if (password && confirmPassword) {
+        function validatePassword() {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity("Passwords don't match");
+            } else {
+                confirmPassword.setCustomValidity('');
+            }
+        }
+        
+        password.addEventListener('change', validatePassword);
+        confirmPassword.addEventListener('change', validatePassword);
+    }
+});
+</script>
+{% endblock %}
