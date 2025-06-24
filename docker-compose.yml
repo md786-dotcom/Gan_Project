@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-this}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-jwt-secret-key-change-this}
+      - DATABASE_URL=sqlite:///instance/image_service.db
+    volumes:
+      - ./instance:/app/instance
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
+      - ./static/uploads:/app/static/uploads
+      - ./static/processed:/app/static/processed
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

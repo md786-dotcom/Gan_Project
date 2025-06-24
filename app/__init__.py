@@ -27,7 +27,18 @@ def create_app():
     # Configuration - all with sensible defaults
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'image-processing-secret-key-change-in-production')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///image_service.db')
+    
+    # Database configuration with instance directory for SQLite
+    db_url = os.getenv('DATABASE_URL', 'sqlite:///image_service.db')
+    if db_url.startswith('sqlite:///') and not db_url.startswith('sqlite:////'):
+        # Ensure SQLite database is in instance directory
+        db_name = db_url.replace('sqlite:///', '')
+        instance_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance')
+        os.makedirs(instance_dir, exist_ok=True)
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, db_name)}'
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', '16777216'))  # 16MB
     app.config['WTF_CSRF_ENABLED'] = True
