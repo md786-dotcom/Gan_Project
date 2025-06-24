@@ -1,63 +1,59 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - ImageProcessor{% endblock %}
+{% block title %}Dashboard - Pixelz{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="uk-container uk-margin-large-top">
     <!-- Welcome Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 bg-gradient shadow-sm">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h1 class="h3 mb-2 text-white">
-                                <i class="fas fa-sparkles me-2"></i>
-                                Welcome back, {{ user.email.split('@')[0].title() }}!
-                            </h1>
-                            <p class="text-white-50 mb-0">
-                                Ready to transform some images? Upload new photos or manage your existing collection.
-                            </p>
-                        </div>
-                        <div class="col-md-4 text-md-end">
-                            <a href="{{ url_for('web.upload_page') }}" class="btn btn-light btn-lg">
-                                <i class="fas fa-plus me-2"></i>Upload New Image
-                            </a>
-                        </div>
-                    </div>
+    <div class="uk-margin-large-bottom">
+        <div class="uk-card uk-card-primary uk-card-body uk-border-rounded" style="background: var(--gradient-primary);">
+            <div class="uk-grid-match uk-flex-middle" uk-grid>
+                <div class="uk-width-expand@m">
+                    <h1 class="uk-card-title uk-margin-small-bottom uk-light">
+                        <i class="fas fa-sparkles uk-margin-small-right"></i>
+                        Welcome back, {{ user.email.split('@')[0].title() }}!
+                    </h1>
+                    <p class="uk-text-muted uk-light uk-margin-remove">
+                        Ready to transform some images? Upload new photos or manage your existing collection.
+                    </p>
+                </div>
+                <div class="uk-width-auto@m uk-text-right@m">
+                    <a href="{{ url_for('web.upload_page') }}" class="uk-button uk-button-default uk-button-large">
+                        <i class="fas fa-plus uk-margin-small-right"></i>Upload New Image
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
+    <div class="uk-grid-match uk-child-width-1-4@l uk-child-width-1-2@m uk-margin-large-bottom" uk-grid>
+        <div>
             <div class="stat-card">
-                <i class="fas fa-images text-primary"></i>
+                <i class="fas fa-images uk-text-primary uk-margin-bottom" style="font-size: 2.5rem;"></i>
                 <div class="stat-number">{{ images.total }}</div>
-                <div class="stat-label">Total Images</div>
+                <div class="uk-text-muted uk-text-small uk-text-uppercase">Total Images</div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div>
             <div class="stat-card">
-                <i class="fas fa-magic text-success"></i>
+                <i class="fas fa-magic uk-text-success uk-margin-bottom" style="font-size: 2.5rem;"></i>
                 <div class="stat-number">{{ images.items|selectattr('transformations')|list|length }}</div>
-                <div class="stat-label">Processed</div>
+                <div class="uk-text-muted uk-text-small uk-text-uppercase">Processed</div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div>
             <div class="stat-card">
-                <i class="fas fa-cloud-upload-alt text-info"></i>
+                <i class="fas fa-cloud-upload-alt uk-text-info uk-margin-bottom" style="font-size: 2.5rem;"></i>
                 <div class="stat-number">{{ (images.items|sum(attribute='file_size') / 1024 / 1024)|round(1) }}MB</div>
-                <div class="stat-label">Total Size</div>
+                <div class="uk-text-muted uk-text-small uk-text-uppercase">Total Size</div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div>
             <div class="stat-card">
-                <i class="fas fa-calendar text-warning"></i>
+                <i class="fas fa-calendar uk-text-warning uk-margin-bottom" style="font-size: 2.5rem;"></i>
                 <div class="stat-number">{{ user.created_at.strftime('%B %Y') }}</div>
-                <div class="stat-label">Member Since</div>
+                <div class="uk-text-muted uk-text-small uk-text-uppercase">Member Since</div>
             </div>
         </div>
     </div>
