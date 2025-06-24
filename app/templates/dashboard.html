@@ -155,7 +155,7 @@
                                                 <div class="text-white-50">
                                                     {{ image.width }}×{{ image.height }} • 
                                                     {{ (image.file_size / 1024)|round(1) }}KB •
-                                                    {{ moment(image.created_at).fromNow() }}
+                                                    {{ image.created_at.strftime('%m/%d/%Y') }}
                                                 </div>
                                             </div>
                                         </div>
