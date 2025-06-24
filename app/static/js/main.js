@@ -54,10 +54,22 @@ function initializeFileUpload() {
         }
     });
     
-    // Click to upload
-    uploadZone.addEventListener('click', function() {
-        fileInput.click();
+    // Click to upload (but not on the browse button)
+    uploadZone.addEventListener('click', function(e) {
+        // Don't trigger if clicking on the browse button itself
+        if (e.target.id !== 'browseBtn' && !e.target.closest('#browseBtn')) {
+            fileInput.click();
+        }
     });
+    
+    // Handle browse button click separately
+    const browseBtn = document.getElementById('browseBtn');
+    if (browseBtn) {
+        browseBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent the uploadZone click event
+            fileInput.click();
+        });
+    }
     
     fileInput.addEventListener('change', function() {
         if (this.files.length > 0) {
