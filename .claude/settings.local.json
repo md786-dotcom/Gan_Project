@@ -12,7 +12,8 @@
       "Bash(rm:*)",
       "Bash(FLASK_ENV=development python run.py)",
       "Bash(pkill:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
