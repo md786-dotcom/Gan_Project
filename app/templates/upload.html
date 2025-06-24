@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Upload Image - ImageProcessor{% endblock %}
+{% block title %}Upload Image - Pixelz{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -26,7 +26,7 @@
                     </h5>
                 </div>
                 <div class="card-body p-4">
-                    <form id="uploadForm" method="POST" action="{{ url_for('images.upload_image') }}" enctype="multipart/form-data">
+                    <form id="uploadForm" method="POST" action="/api/images/upload" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                         
                         <!-- Upload Zone -->
@@ -155,10 +155,6 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    loadRecentUploads();
-});
-
 function clearFile() {
     const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
@@ -176,69 +172,15 @@ function clearFile() {
     uploadZone.classList.remove('dragover');
 }
 
-function handleFileSelect(file) {
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff'];
-    if (!allowedTypes.includes(file.type)) {
-        showNotification('Please select a valid image file', 'error');
-        return false;
-    }
-    
-    // Validate file size (16MB max)
-    const maxSize = 16 * 1024 * 1024;
-    if (file.size > maxSize) {
-        showNotification('File size must be less than 16MB', 'error');
-        return false;
-    }
-    
-    // Update UI
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const fileInfo = document.getElementById('fileInfo');
-    const uploadBtn = document.getElementById('uploadBtn');
-    
-    fileName.textContent = file.name;
-    fileSize.textContent = formatFileSize(file.size);
-    fileInfo.classList.remove('d-none');
-    uploadBtn.classList.remove('d-none');
-    uploadBtn.disabled = false;
-    
-    // Show preview
-    showImagePreview(file);
-    
-    return true;
-}
-
-function showImagePreview(file) {
-    const preview = document.getElementById('imagePreview');
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        preview.innerHTML = `
-            <div class="position-relative d-inline-block">
-                <img src="${e.target.result}" class="img-fluid rounded shadow-sm" 
-                     style="max-height: 300px; max-width: 100%;" alt="Preview">
-                <div class="position-absolute top-0 end-0 p-2">
-                    <span class="badge bg-success">
-                        <i class="fas fa-check me-1"></i>Ready to Upload
-                    </span>
-                </div>
-            </div>
-        `;
-        preview.classList.remove('d-none');
-        
-        // Add fade-in animation
-        preview.classList.add('fade-in');
-    };
-    
-    reader.readAsDataURL(file);
-}
-
 function loadRecentUploads() {
     const recentUploads = document.getElementById('recentUploads');
     if (!recentUploads) return;
     
-    fetch('/api/images/?per_page=3')
+    fetch('/api/images/?per_page=3', {
+        headers: {
+            'X-CSRF-Token': getCSRFToken()
+        }
+    })
         .then(response => response.json())
         .then(data => {
             if (data.images && data.images.length > 0) {
@@ -289,140 +231,10 @@ function loadRecentUploads() {
         });
 }
 
-// Override the main.js file upload handler for this page
-function initializeFileUpload() {
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('fileInput');
-    const uploadForm = document.getElementById('uploadForm');
-    
-    if (!uploadZone || !fileInput) return;
-    
-    // Drag and drop functionality
-    uploadZone.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadZone.classList.add('dragover');
-    });
-    
-    uploadZone.addEventListener('dragleave', function() {
-        uploadZone.classList.remove('dragover');
-    });
-    
-    uploadZone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadZone.classList.remove('dragover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            if (handleFileSelect(files[0])) {
-                const dt = new DataTransfer();
-                dt.items.add(files[0]);
-                fileInput.files = dt.files;
-            }
-        }
-    });
-    
-    // Click to upload
-    uploadZone.addEventListener('click', function(e) {
-        if (e.target.tagName !== 'BUTTON') {
-            fileInput.click();
-        }
-    });
-    
-    fileInput.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            handleFileSelect(this.files[0]);
-        }
-    });
-    
-    // Form submission
-    if (uploadForm) {
-        uploadForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            uploadFile();
-        });
-    }
-}
-
-function uploadFile() {
-    const form = document.getElementById('uploadForm');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const progressContainer = document.getElementById('uploadProgress');
-    const progressBar = document.getElementById('progressBar');
-    
-    if (!form || !form.checkValidity()) {
-        showNotification('Please select a valid image file', 'error');
-        return;
-    }
-    
-    const formData = new FormData(form);
-    
-    // Show progress
-    progressContainer.classList.remove('d-none');
-    uploadBtn.disabled = true;
-    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
-    
-    // Upload with progress tracking
-    const xhr = new XMLHttpRequest();
-    
-    xhr.upload.addEventListener('progress', function(e) {
-        if (e.lengthComputable && progressBar) {
-            const percentComplete = (e.loaded / e.total) * 100;
-            progressBar.style.width = percentComplete + '%';
-            progressBar.textContent = Math.round(percentComplete) + '%';
-        }
-    });
-    
-    xhr.addEventListener('load', function() {
-        if (xhr.status === 200 || xhr.status === 201) {
-            progressBar.classList.remove('progress-bar');
-            progressBar.classList.add('progress-bar', 'bg-success');
-            progressBar.textContent = 'Complete!';
-            
-            showNotification('Image uploaded successfully!', 'success');
-            
-            setTimeout(() => {
-                window.location.href = '/dashboard';
-            }, 1500);
-        } else {
-            try {
-                const response = JSON.parse(xhr.responseText);
-                showNotification(response.error || 'Upload failed', 'error');
-            } catch (e) {
-                showNotification('Upload failed', 'error');
-            }
-        }
-    });
-    
-    xhr.addEventListener('error', function() {
-        showNotification('Upload failed. Please check your connection and try again.', 'error');
-    });
-    
-    xhr.addEventListener('loadend', function() {
-        if (xhr.status !== 200 && xhr.status !== 201) {
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Image';
-            
-            setTimeout(() => {
-                progressContainer.classList.add('d-none');
-                progressBar.style.width = '0%';
-                progressBar.textContent = '';
-                progressBar.classList.remove('bg-success');
-            }, 3000);
-        }
-    });
-    
-    xhr.open('POST', form.action);
-    xhr.setRequestHeader('X-CSRF-Token', getCSRFToken());
-    xhr.send(formData);
-}
-
-// Initialize upload page - let main.js handle the file upload logic
+// Initialize upload page
 document.addEventListener('DOMContentLoaded', function() {
     // Load recent uploads
     loadRecentUploads();
-    
-    // Let main.js initialize the file upload functionality
-    // No need to override since main.js handles everything correctly
 });
 </script>
 {% endblock %}

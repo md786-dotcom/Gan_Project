@@ -46,7 +46,11 @@ function initializeFileUpload() {
         
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            handleFileSelect(files[0]);
+            if (handleFileSelect(files[0])) {
+                const dt = new DataTransfer();
+                dt.items.add(files[0]);
+                fileInput.files = dt.files;
+            }
         }
     });
     
@@ -72,17 +76,17 @@ function initializeFileUpload() {
 
 function handleFileSelect(file) {
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff'];
     if (!allowedTypes.includes(file.type)) {
-        showNotification('Please select a valid image file (JPEG, PNG, GIF, WebP)', 'error');
-        return;
+        showNotification('Please select a valid image file', 'error');
+        return false;
     }
     
     // Validate file size (16MB max)
     const maxSize = 16 * 1024 * 1024;
     if (file.size > maxSize) {
         showNotification('File size must be less than 16MB', 'error');
-        return;
+        return false;
     }
     
     // Update UI
@@ -90,10 +94,12 @@ function handleFileSelect(file) {
     const uploadZone = document.getElementById('uploadZone');
     const fileName = document.getElementById('fileName');
     const fileSize = document.getElementById('fileSize');
+    const fileInfo = document.getElementById('fileInfo');
     
     if (fileInput) fileInput.files = createFileList(file);
     if (fileName) fileName.textContent = file.name;
     if (fileSize) fileSize.textContent = formatFileSize(file.size);
+    if (fileInfo) fileInfo.classList.remove('d-none');
     
     // Show preview if possible
     showImagePreview(file);
@@ -104,6 +110,8 @@ function handleFileSelect(file) {
         uploadBtn.disabled = false;
         uploadBtn.classList.remove('d-none');
     }
+    
+    return true;
 }
 
 function createFileList(file) {
@@ -187,7 +195,7 @@ function uploadFile() {
         }
     });
     
-    xhr.open('POST', '/api/images/upload');
+    xhr.open('POST', form.action || '/api/images/upload');
     xhr.setRequestHeader('X-CSRF-Token', getCSRFToken());
     xhr.send(formData);
 }
