@@ -243,12 +243,6 @@ def transform_image(image_id):
                 transform_params['flip'] = request.form.get('flip')
             if request.form.get('filter'):
                 transform_params['filter'] = request.form.get('filter')
-            if request.form.get('watermark_text'):
-                transform_params['watermark'] = {
-                    'text': request.form.get('watermark_text'),
-                    'position': request.form.get('watermark_position', 'bottom-right'),
-                    'opacity': float(request.form.get('watermark_opacity', 0.5))
-                }
             if request.form.get('format'):
                 transform_params['format'] = request.form.get('format')
             if request.form.get('quality'):
@@ -329,25 +323,6 @@ def transform_image(image_id):
                     'filter_type': filter_type
                 })
                 transformation_summary.append(f"filter_{filter_type}")
-        
-        # Add watermark
-        if 'watermark' in transform_params:
-            watermark_params = transform_params['watermark']
-            if isinstance(watermark_params, dict) and 'text' in watermark_params:
-                text = watermark_params['text'][:50]  # Limit watermark text length
-                transformed_bytes = image_service.add_watermark(
-                    transformed_bytes,
-                    text,
-                    watermark_params.get('position', 'bottom-right'),
-                    watermark_params.get('opacity', 0.5)
-                )
-                applied_transformations.append({
-                    'type': 'watermark',
-                    'text': text,
-                    'position': watermark_params.get('position', 'bottom-right'),
-                    'opacity': watermark_params.get('opacity', 0.5)
-                })
-                transformation_summary.append("watermark")
         
         # Change format
         if 'format' in transform_params:
